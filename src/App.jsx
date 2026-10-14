@@ -1,97 +1,108 @@
 import React, { useState } from 'react';
 
-const INITIAL_STAPLES = ["Tuz", "Karabiber", "Sıvı Yağ", "Tereyağı", "Salça", "Soğan", "Sarımsak"];
+const INITIAL_STAPLES = ["Tuz", "Karabiber", "Zeytinyağı", "Limon", "Tereyağı", "Salça", "Soğan", "Sarımsak"];
 
-// Girdiğiniz malzemelere göre %100 doğrudan ve gerçekçi tarif üreten akıllı motor
-const generateRecipesFromIngredients = (ingredients, staples, servings) => {
-  if (!ingredients || ingredients.length === 0) return [];
+// Gelişmiş Akıllı Yemek/Salata Akıl Motoru
+const generateSmartSearchRecipe = (query, servings) => {
+  const q = query.toLowerCase().trim();
 
-  const lowerIngs = ingredients.map(i => i.toLowerCase().trim());
-  const ingStr = ingredients.join(" ve ");
+  // 1. SALATALAR VE SOĞUK MEZELER (Pişirme/Kavurma Kesinlikle YOK!)
+  if (q.includes('salata') || q.includes('cacık') || q.includes('meze') || q.includes('piyaz') || q.includes('gavurdağı')) {
+    let ingredientsList = [];
+    
+    if (q.includes('çoban') || q.includes('coban')) {
+      ingredientsList = [
+        `${(1 * servings)} adet Orta Boy Domates (küp doğranmış)`,
+        `${(1 * servings)} adet Salatalık (kabuğu soyulup küp doğranmış)`,
+        `${(0.5 * servings).toFixed(1)} adet Yeşil Biber (ince kıyılmış)`,
+        `${(0.25 * servings).toFixed(1)} adet Kuru Soğan veya Çeyrek Demet Maydanoz`,
+        `${(1 * servings)} yemek kaşığı Sızma Zeytinyağı`,
+        `${(0.5 * servings).toFixed(1)} adet Taze Sıkılmış Limon Suyu veya Nar Ekşisi`,
+        `${(0.25 * servings).toFixed(1)} tatlı kaşığı Tuz`
+      ];
+    } else {
+      ingredientsList = [
+        `${(1 * servings)} porsiyon Doğranmış Taze Sebzeler (${query} için)`,
+        `${(1 * servings)} yemek kaşığı Sızma Zeytinyağı`,
+        `${(0.5 * servings).toFixed(1)} adet Limon Suyu`,
+        `Tuz ve İsteğe Göre Yeşillikler`
+      ];
+    }
 
-  // 1. ÖZEL DURUM: PATATES VE YUMURTA
-  if (lowerIngs.includes('patates') && lowerIngs.includes('yumurta')) {
-    return [
-      {
-        id: 'dyn-1',
-        title: "Küp Patatesli Yumurta Sote",
-        source: "Geleneksel Kahvaltı & Pratik Mutfak",
-        time: "15-20 dk",
-        servingsNote: `${servings} Kişilik Hesaplanan Ölçü`,
-        detailedIngredients: [
-          `${(1 * servings)} adet Patates (küçük küpler halinde doğranmış)`,
-          `${(1 * servings)} adet Yumurta`,
-          `${(0.75 * servings).toFixed(1)} yemek kaşığı Tereyağı veya Sıvı Yağ`,
-          `${(0.25 * servings).toFixed(1)} tatlı kaşığı Tuz, Karabiber ve Pul Biber`
-        ],
-        steps: [
-          "Patatesleri minik küpler halinde doğrayın.",
-          "Tavada yağı kızdırıp patatesleri yumuşayıp üzeri hafif kızarana kadar kapağı kapalı şekilde pişirin.",
-          "Patatesler pişince üzerine tuz ve baharatları ekleyip karıştırın.",
-          "Yumurtaları doğrudan patateslerin üzerine kırın. İster sarılarını bozmadan ister karıştırarak pişirip sıcak servis edin."
-        ]
-      },
-      {
-        id: 'dyn-2',
-        title: "Rendelenmiş Patatesli Omlet (İspanyol Usulü)",
-        source: "Pratik Mutfak Rehberi",
-        time: "15 dk",
-        servingsNote: `${servings} Kişilik Hesaplanan Ölçü`,
-        detailedIngredients: [
-          `${(1 * servings)} adet Patates (rendelenmiş ve suyu sıkılmış)`,
-          `${(1 * servings)} adet Yumurta (çırpılmış)`,
-          `${(0.5 * servings).toFixed(1)} yemek kaşığı Sıvı Yağ`,
-          `${(0.25 * servings).toFixed(1)} tatlı kaşığı Tuz ve Karabiber`
-        ],
-        steps: [
-          "Patatesleri rendeleyin ve çıkan fazla suyunu elinizle iyice sıkın.",
-          "Tavada az yağı kızdırıp rendelenmiş patatesleri tavaya ince bir katman halinde yayın, arkalı önlü hafifçe pişirin.",
-          "Çırpılmış yumurtayı patateslerin üzerine dökün. Kısık ateşte kapağı kapalı olarak omlet kıvamında pişirin."
-        ]
-      }
-    ];
+    return {
+      title: `${query.toUpperCase()} (Taze Soğuk Hazırlanış)`,
+      servingsNote: `${servings} Kişilik Taze Ölçü`,
+      isCold: true,
+      detailedIngredients: ingredientsList,
+      steps: [
+        "Domates, salatalık ve biberleri eşit büyüklükte küçük küpler halinde doğrayın.",
+        "Kuru soğanı piyazlık doğrayıp az tuzla ovarak acısını çıkarın ve yıkayıp kurutun.",
+        "Tüm doğranmış sebzeleri ve ince kıyılmış maydanozu geniş bir salata kasesinde birleştirin.",
+        "Ayrı bir kapta zeytinyağı, limon suyu (veya nar ekşisi) ve tuzu çırparak sosu hazırlayın.",
+        "Hazırladığınız sosu salatanın üzerine döküp zedelemeden karıştırın ve taze olarak servis edin."
+      ]
+    };
   }
 
-  // 2. DİĞER TÜM MALZEME KOMBİNASYONLARI İÇİN DİNAMİK VE DOĞRUDAN TARİF ÜRETİCİ
-  return [
-    {
-      id: 'dyn-1',
-      title: `${ingStr} Sote / Tencere Yemeği`,
-      source: "Şefin Mutfak Rehberi",
-      time: "20-25 dk",
-      servingsNote: `${servings} Kişilik Hesaplanan Ölçü`,
-      detailedIngredients: ingredients.map(ing => `${(1 * servings)} porsiyon ${ing}`).concat([
-        `${(0.25 * servings).toFixed(1)} adet Kuru Soğan`,
-        `${(0.75 * servings).toFixed(1)} yemek kaşığı Sıvı Yağ / Tereyağı`,
-        `Tuz, Karabiber ve İsteğe Göre Baharatlar`
-      ]),
+  // 2. YUMURTALI YEMEKLER & MENEMEN/OMLET
+  if (q.includes('yumurta') || q.includes('menemen') || q.includes('omlet')) {
+    return {
+      title: `${query.toUpperCase()}`,
+      servingsNote: `${servings} Kişilik Ölçü`,
+      detailedIngredients: [
+        `${(1 * servings)} adet Yumurta`,
+        `${(1 * servings)} adet Domates & Biber`,
+        `${(0.75 * servings).toFixed(1)} yemek kaşığı Tereyağı / Sıvı Yağ`,
+        `Tuz ve Karabiber`
+      ],
       steps: [
-        `Geniş bir tavada yağı kızdırıp soğanları pembeleşene kadar soteleyin.`,
-        `Ana malzemeleriniz olan (${ingStr}) ekleyip pişme sürelerine göre sırayla karıştırarak pişirin.`,
-        `Tuz ve baharatları ekleyip ${servings} kişilik porsiyon ölçülerine göre sıcak servis yapın.`
+        "Sebzeleri tavada yağ ile soteleyin.",
+        "Yumurtaları kırıp tuz ekleyin.",
+        "Kısık ateşte karıştırarak pişirin."
       ]
-    },
-    {
-      id: 'dyn-2',
-      title: `Pratik ${ingStr} Harmanı`,
-      source: "Hızlı Mutfak Yöntemleri",
-      time: "15 dk",
-      servingsNote: `${servings} Kişilik Hesaplanan Ölçü`,
-      detailedIngredients: ingredients.map(ing => `${(1 * servings)} porsiyon ${ing}`).concat([
-        `${(0.5 * servings).toFixed(1)} yemek kaşığı Zeytinyağı`,
-        `Tuz ve Kekik`
-      ]),
+    };
+  }
+
+  // 3. ÇORBALAR
+  if (q.includes('çorba') || q.includes('corba')) {
+    return {
+      title: `${query.toUpperCase()} (Tencere Çorbası)`,
+      servingsNote: `${servings} Kişilik Ölçü`,
+      detailedIngredients: [
+        `${(0.5 * servings).toFixed(1)} su bardağı Ana Çorba Malzemesi (${query})`,
+        `${(1.5 * servings)} su bardağı Sıcak Su / Et Suyu`,
+        `${(0.75 * servings).toFixed(1)} yemek kaşığı Yağ ve Salça/Un`,
+        `Tuz ve Baharatlar`
+      ],
       steps: [
-        `Tavada zeytinyağını ısıtıp (${ingStr}) malzemelerini yüksek ateşte soteleyin.`,
-        `Baharatları ekleyip 10 dakika kendi buharında pişirin.`
+        "Tencerede yağ ve unu/salçayı hafifçe kavurun.",
+        "Ana malzemeleri ve sıcak suyu ekleyip kaynamaya bırakın.",
+        "Kısık ateşte yumuşayana kadar pişirip pürüzsüz olana kadar blenderdan geçirin."
       ]
-    }
-  ];
+    };
+  }
+
+  // 4. GENEL SICAK YEMEKLER
+  return {
+    title: `${query.toUpperCase()} (Sıcak Yemek)`,
+    servingsNote: `${servings} Kişilik Ölçü`,
+    detailedIngredients: [
+      `${(1 * servings)} porsiyon Ana Malzeme (${query})`,
+      `${(0.25 * servings).toFixed(1)} adet Kuru Soğan ve Sarımsak`,
+      `${(1 * servings)} yemek kaşığı Sıvı Yağ / Salça`,
+      `Tuz ve Baharatlar`
+    ],
+    steps: [
+      "Tencerede yağı ısıtıp soğanları soteleyin.",
+      "Ana malzemeleri ve salçayı ekleyip kavurun.",
+      "Sıcak su ekleyip kısık ateşte pişmeye bırakın."
+    ]
+  };
 };
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('ingredients');
-  const [servings, setServings] = useState(2); // Porsiyon
+  const [servings, setServings] = useState(2);
 
   // Malzemeye göre arama state'leri
   const [kitchenStaples, setKitchenStaples] = useState(INITIAL_STAPLES);
@@ -99,7 +110,7 @@ export default function App() {
   const [userIngredients, setUserIngredients] = useState([]);
   const [newIngredientInput, setNewIngredientInput] = useState('');
 
-  // Yemek adıyla arama state'leri
+  // Yemek adıyla arama state'i
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleAddStaple = (e) => {
@@ -128,14 +139,14 @@ export default function App() {
     setUserIngredients(userIngredients.filter(i => i !== item));
   };
 
-  // Doğrudan girilen malzemelere göre tarif üret
-  const ingredientRecipes = generateRecipesFromIngredients(userIngredients, kitchenStaples, servings);
+  // Yemek Arama Sonucu
+  const searchRecipeResult = searchQuery.trim() !== '' ? generateSmartSearchRecipe(searchQuery, servings) : null;
 
   return (
     <div className="max-w-md mx-auto bg-gray-50 min-h-screen p-4 font-sans pb-12">
       <header className="text-center mb-4 pt-2">
         <h1 className="text-2xl font-bold text-emerald-600 tracking-tight">👨‍🍳 Şef Yalçın Tarifleri</h1>
-        <p className="text-xs text-gray-500 mt-1">Gelişmiş Akıllı Mutfak Asistanı</p>
+        <p className="text-xs text-gray-500 mt-1">Akıllı ve Doğru Mutfak Asistanı</p>
       </header>
 
       {/* Porsiyon / Kişi Sayısı Seçimi */}
@@ -158,7 +169,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* Sekme Değiştirme */}
+      {/* Sekmeler */}
       <div className="flex bg-gray-200 p-1 rounded-xl mb-5">
         <button
           onClick={() => setActiveTab('ingredients')}
@@ -208,7 +219,7 @@ export default function App() {
             <form onSubmit={handleAddIngredient} className="flex gap-2 mb-3">
               <input
                 type="text"
-                placeholder="Örn: Patates, Yumurta, Tavuk..."
+                placeholder="Örn: Salatalık, Domates, Biber..."
                 value={newIngredientInput}
                 onChange={(e) => setNewIngredientInput(e.target.value)}
                 className="flex-1 border rounded-lg px-3 py-2 text-xs focus:outline-emerald-500"
@@ -226,43 +237,6 @@ export default function App() {
               </div>
             )}
           </section>
-
-          {/* Malzemeye Göre Çıkan Doğrudan Tarifler */}
-          <div className="space-y-4">
-            {userIngredients.length === 0 ? (
-              <div className="bg-white p-6 rounded-xl text-center border border-dashed border-gray-200">
-                <p className="text-xs text-gray-500">Malzemelerinizi girin, o malzemelerle yapılabilecek özel tarifler anında hazırlansın.</p>
-              </div>
-            ) : (
-              ingredientRecipes.map((recipe, index) => (
-                <div key={recipe.id} className="bg-white p-4 rounded-xl shadow-sm border border-emerald-100">
-                  <h4 className="font-bold text-gray-800 text-sm mb-1">Öneri {index + 1}: {recipe.title}</h4>
-                  <p className="text-[10px] text-gray-400 mb-2">{recipe.source} • {recipe.servingsNote}</p>
-                  
-                  <div className="text-xs mb-3 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
-                    <span className="font-semibold text-gray-700 block mb-1.5">⚖️ Gerekli Malzeme Ölçüleri:</span>
-                    <ul className="space-y-1">
-                      {recipe.detailedIngredients.map((ing, idx) => (
-                        <li key={idx} className="text-[11px] text-gray-700 flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                          {ing}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="border-t pt-2 space-y-1 text-xs">
-                    <span className="font-semibold text-gray-700 block">👨‍🍳 Yapılışı:</span>
-                    {recipe.steps.map((step, idx) => (
-                      <p key={idx} className="text-[11px] text-gray-600 leading-relaxed">
-                        <span className="font-bold text-emerald-700">{idx + 1}.</span> {step}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
         </div>
       )}
 
@@ -270,11 +244,11 @@ export default function App() {
       {activeTab === 'search' && (
         <div className="space-y-4">
           <section className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-            <h2 className="font-semibold text-gray-700 text-xs uppercase tracking-wide mb-2">🔍 Yemek Adı ile Ara</h2>
+            <h2 className="font-semibold text-gray-700 text-xs uppercase tracking-wide mb-2">🔍 Yemek Adı veya Salata Ara</h2>
             <form onSubmit={(e) => e.preventDefault()} className="flex gap-2 mb-2">
               <input
                 type="text"
-                placeholder="Örn: Karnıyarık, Lazanya, Menemen..."
+                placeholder="Örn: Çoban Salata, Mercimek Çorbası, Menemen..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1 border rounded-lg px-3 py-2 text-xs focus:outline-emerald-500"
@@ -282,21 +256,30 @@ export default function App() {
             </form>
           </section>
 
-          {searchQuery.trim() !== '' && (
+          {searchRecipeResult && (
             <div className="bg-white p-4 rounded-xl shadow-sm border border-emerald-100">
-              <h4 className="font-bold text-gray-800 text-sm mb-1">{searchQuery} (Arama Tarifi)</h4>
-              <p className="text-[10px] text-gray-400 mb-2">{servings} Kişilik Özel Hazırlanan Ölçü</p>
-              <div className="text-xs mb-3 bg-gray-50 p-2.5 rounded-lg">
-                <span className="font-semibold text-gray-700 block mb-1">⚖️ Malzemeler:</span>
-                <div className="text-[11px]">• {(1 * servings)} porsiyon {searchQuery} Ana Malzemesi</div>
-                <div className="text-[11px]">• {(0.5 * servings).toFixed(1)} adet Kuru Soğan ve Sarımsak</div>
-                <div className="text-[11px]">• {(1 * servings)} yemek kaşığı Sıvı Yağ / Salça</div>
+              <h4 className="font-bold text-gray-800 text-sm mb-1">{searchRecipeResult.title}</h4>
+              <p className="text-[10px] text-emerald-600 font-medium mb-3">{searchRecipeResult.servingsNote}</p>
+              
+              <div className="text-xs mb-3 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                <span className="font-semibold text-gray-700 block mb-1.5">⚖️ Gerekli Malzemeler:</span>
+                <ul className="space-y-1">
+                  {searchRecipeResult.detailedIngredients.map((ing, idx) => (
+                    <li key={idx} className="text-[11px] text-gray-700 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                      {ing}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <div className="border-t pt-2 text-xs space-y-1">
-                <span className="font-semibold text-gray-700 block mb-1">👨‍🍳 Yapılışı:</span>
-                <p className="text-[11px] text-gray-600">1. Malzemeleri hazırlayıp yağı tavada ısıtın.</p>
-                <p className="text-[11px] text-gray-600">2. Soğanları ve ana malzemeleri ekleyip kavurun.</p>
-                <p className="text-[11px] text-gray-600">3. Salça ve baharatları ekleyip kısık ateşte demlendirerek pişirin.</p>
+
+              <div className="border-t pt-2 space-y-1 text-xs">
+                <span className="font-semibold text-gray-700 block mb-1">👨‍🍳 Hazırlanışı:</span>
+                {searchRecipeResult.steps.map((step, idx) => (
+                  <p key={idx} className="text-[11px] text-gray-600 leading-relaxed">
+                    <span className="font-bold text-emerald-700">{idx + 1}.</span> {step}
+                  </p>
+                ))}
               </div>
             </div>
           )}
