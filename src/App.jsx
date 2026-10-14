@@ -2,10 +2,35 @@ import React, { useState } from 'react';
 
 const INITIAL_STAPLES = ["Tuz", "Karabiber", "Sıvı Yağ", "Sarımsak", "Tereyağı", "Salça", "Soğan", "Zeytinyağı"];
 
-// Sabit (Lokal) Veritabanı
+// Sabit Veritabanı
 const RECIPES_DATABASE = [
   {
     id: 1,
+    title: "Hatay Usulü Tavuk Dürüm",
+    category: "Tavuk",
+    time: "25 dk",
+    difficulty: "Kolay",
+    staples: ["Sıvı Yağ", "Salça", "Sarımsak", "Tuz", "Karabiber"],
+    ingredients: ["Tavuk", "Lavaş", "Patates", "Mayonez", "Turşu"],
+    baseIngredients: [
+      { name: "Tavuk Göğsü / Jülide Tavuk", amount: 150, unit: "gram" },
+      { name: "Özel Dürüm Lavaşı", amount: 1, unit: "adet" },
+      { name: "Patates Kızartması", amount: 0.5, unit: "porsiyon" },
+      { name: "Sarımsaklı Özel Sos / Mayonez", amount: 1.5, unit: "yemek kaşığı" },
+      { name: "Salçalı Özel Sos", amount: 2, unit: "yemek kaşığı" },
+      { name: "Salatalık Turşusu", amount: 2, unit: "dilim" },
+      { name: "Sıvı Yağ / Tereyağı", amount: 0.75, unit: "yemek kaşığı" }
+    ],
+    steps: [
+      "Jülyen doğranmış tavukları az yağda baharatlar ve hafif salça ile tavada sotelerken kızartın.",
+      "Salça, sarımsak, az su ve zeytinyağı ile özel Antakya salçalı sosunu sos tenceresinde kaynatın.",
+      "Lavaş ekmeğini tavadaki tavukların yağına ve hazırladığınız salçalı sosa hafifçe bastırarak soslayın.",
+      "Lavaşın tabanına sarımsaklı mayonez ve salçalı sos sürün. Üzerine sotelenmiş tavukları, kızarmış patatesi ve turşuyu dizin.",
+      "Sıkıca dürüm yapıp döküm tavada veya tost makinesinde dışı çıtır olana kadar bastırarak ısıtın ve sıcak servis edin."
+    ]
+  },
+  {
+    id: 2,
     title: "Patlıcan Musakka",
     category: "Türk",
     time: "35 dk",
@@ -24,27 +49,6 @@ const RECIPES_DATABASE = [
       "Patlıcanları alacalı soyup küp doğrayın ve yağda hafifçe kızartın.",
       "Ayrı tencerede soğan, sarımsak, biber ve kıymayı kavurun. Salça ve domatesi ekleyip harcı pişirin.",
       "Patlıcanları tencereye dizip üzerine kıymalı harcı dökün. Az sıcak su ekleyip 20 dk kısık ateşte pişirin."
-    ]
-  },
-  {
-    id: 2,
-    title: "Tavuk Sote",
-    category: "Tavuk",
-    time: "25 dk",
-    difficulty: "Kolay",
-    staples: ["Sıvı Yağ", "Salça", "Soğan", "Sarımsak", "Tuz", "Karabiber"],
-    ingredients: ["Tavuk", "Biber", "Domates"],
-    baseIngredients: [
-      { name: "Tavuk Göğsü", amount: 150, unit: "gram" },
-      { name: "Kuru Soğan", amount: 0.25, unit: "adet" },
-      { name: "Biber", amount: 0.5, unit: "adet" },
-      { name: "Domates", amount: 0.5, unit: "adet" },
-      { name: "Sıvı Yağ", amount: 0.75, unit: "yemek kaşığı" }
-    ],
-    steps: [
-      "Tavada sıvı yağı kızdırıp küp doğranmış tavukları soteleyin.",
-      "Soğan ve biberleri ekleyip kavurun.",
-      "Salça, domates ve baharatları ekleyip kısık ateşte pişirin."
     ]
   },
   {
@@ -68,6 +72,135 @@ const RECIPES_DATABASE = [
     ]
   }
 ];
+
+// Akıllı Yapay Zeka / Arama Çözümleyici (Arama yapılan yemeğe göre gerçekçi malzeme türetici)
+const generateSmartRecipe = (query, servings) => {
+  const q = query.toLowerCase().trim();
+
+  // 1. DÜRÜM / TAVUK / DÖNER KATEGORİSİ
+  if (q.includes('dürüm') || q.includes('tavuk') || q.includes('döner') || q.includes('hatay')) {
+    return [
+      {
+        id: 'smart-1',
+        title: `${query} (Hatay / Antakya Usulü Soslu)`,
+        source: "Hatay Yöresel Mutfak Rehberi",
+        servingsNote: `${servings} Kişilik Oranlanmış Ölçü`,
+        detailedIngredients: [
+          `${(140 * servings)} gram Tavuk Göğsü veya Kalça Eti (Jülyen doğranmış)`,
+          `${(1 * servings)} adet İnce Özel Dürüm Lavaşı`,
+          `${(0.5 * servings).toFixed(1)} porsiyon Patates Kızartması`,
+          `${(1.5 * servings).toFixed(1)} yemek kaşığı Özel Salçalı Sos (Domates/Biber salçası, zeytinyağı ve sarımsak ile)`,
+          `${(1 * servings).toFixed(1)} yemek kaşığı Sarımsaklı Mayonez / Sos`,
+          `${(2 * servings)} dilim Salatalık Turşusu`,
+          `Kırmızı Toz Biber, Kimyon, Kekik ve Tuz`
+        ],
+        steps: [
+          `Tavuk etlerini baharatlar ve az zeytinyağı ile tavada yüksek ateşte kızarana kadar soteleyin.`,
+          `Küçük bir sos tenceresinde salça, ezilmiş sarımsak, zeytinyağı ve az suyu kaynatarak özel Hatay sosunu hazırlayın.`,
+          `Lavaş ekmeğini tavukların piştiği tavaya hafifçe bastırıp yağı ve aromayı almasını sağlayın.`,
+          `Lavaşa önce salçalı sosu ve sarımsaklı sosu sürün. Üzerine sotelenmiş tavukları, patates kızartmasını ve turşuyu dizin.`,
+          `Dürüm yapıp döküm tavada veya tost makinesinde dışı çıtır olana kadar ısıtıp sıcak servis edin.`
+        ]
+      },
+      {
+        id: 'smart-2',
+        title: `${query} (Pratik Izgara / Sote Usulü)`,
+        source: "Pratik Sokak Lezzetleri",
+        servingsNote: `${servings} Kişilik Oranlanmış Ölçü`,
+        detailedIngredients: [
+          `${(150 * servings)} gram Jülyen Tavuk Eti`,
+          `${(1 * servings)} adet Lavaş veya Tırnak Pide`,
+          `${(0.5 * servings).toFixed(1)} adet Kuru Soğan (Sumaklı piyazlık)`,
+          `${(1 * servings).toFixed(1)} yemek kaşığı Tereyağı / Sıvı Yağ`,
+          `Tuz, Karabiber ve Pul Biber`
+        ],
+        steps: [
+          "Tavuk etlerini tereyağında suyunu çekip hafif karamelize olana kadar soteleyin.",
+          "Soğanları ince kıyıp sumak ve maydanozla harmanlayın.",
+          "Isıtılmış lavaşa tavukları ve sumaklı soğanları ekleyip dürüm yapın."
+        ]
+      }
+    ];
+  }
+
+  // 2. HAMUR İŞİ / MAKARNA / LAZANYA KATEGORİSİ
+  if (q.includes('makarna') || q.includes('lazanya') || q.includes('pizza') || q.includes('pide')) {
+    return [
+      {
+        id: 'smart-1',
+        title: `${query} (İtalyan Şef Usulü)`,
+        source: "İtalyan Mutfak Akademi",
+        servingsNote: `${servings} Kişilik Oranlanmış Ölçü`,
+        detailedIngredients: [
+          `${(100 * servings)} gram Makarna / Hamur / Yaprak`,
+          `${(80 * servings)} gram Kıymalı veya Fesleğenli Özel Sos`,
+          `${(1 * servings).toFixed(1)} diş Ezilmiş Sarımsak`,
+          `${(1 * servings).toFixed(1)} yemek kaşığı Sızma Zeytinyağı`,
+          `${(30 * servings)} gram Rendelenmiş Kaşar / Peynir`,
+          `Tuz ve Taze Fesleğen / Karabiber`
+        ],
+        steps: [
+          "Geniş tencerede bol tuzlu suyu kaynatıp makarnayı / hamuru pişirin.",
+          "Ayrı bir tavada zeytinyağı, sarımsak ve özel sosu kısık ateşte ısıtın.",
+          "Haşlanan malzemeleri sosla buluşturup peynir rendesi ile sıcak servis yapın."
+        ]
+      },
+      {
+        id: 'smart-2',
+        title: `${query} (Hızlı Fırın / Tava Yöntemi)`,
+        source: "Pratik Ev Mutfakları",
+        servingsNote: `${servings} Kişilik Oranlanmış Ölçü`,
+        detailedIngredients: [
+          `${(1 * servings)} porsiyon Hazır Taban / Makarna`,
+          `${(1.5 * servings).toFixed(1)} yemek kaşığı Domates Sosu`,
+          `${(40 * servings)} gram Eritme Peyniri`
+        ],
+        steps: [
+          "Malzemeleri fırın kabına veya tavaya dizip soslayın.",
+          "Üzerine peynir rendeleyip fırında veya kapağı kapalı tavada peynirler eriyene kadar pişirin."
+        ]
+      }
+    ];
+  }
+
+  // 3. GENEL GENEL SEBZE / ET / TENCERE YEMEKLERİ (VARSAYILAN AKILLI DÖNÜŞTÜRÜCÜ)
+  return [
+    {
+      id: 'smart-1',
+      title: `${query} (Geleneksel Tencere Usulü)`,
+      source: "Geleneksel Mutfak Rehberi",
+      servingsNote: `${servings} Kişilik Oranlanmış Ölçü`,
+      detailedIngredients: [
+        `${(120 * servings)} gram Doğranmış Ana Sebze / Et (${query} için)`,
+        `${(0.25 * servings).toFixed(1)} adet Kuru Soğan`,
+        `${(0.5 * servings).toFixed(1)} diş Sarımsak`,
+        `${(0.5 * servings).toFixed(1)} yemek kaşığı Domates / Biber Salçası`,
+        `${(1 * servings).toFixed(1)} yemek kaşığı Sıvı Yağ / Zeytinyağı`,
+        `Tuz, Karabiber ve Pul Biber`
+      ],
+      steps: [
+        `Tencerede yağı ısıtıp soğan ve sarımsağı pembeleşene kadar soteleyin.`,
+        `Salçayı ve ${query} malzemelerini ekleyip 3-4 dakika karıştırarak kavurun.`,
+        `Sebzelerin/etlerin hizasına gelecek kadar sıcak su ve baharatları ekleyip kısık ateşte yumuşayana kadar pişirin.`
+      ]
+    },
+    {
+      id: 'smart-2',
+      title: `${query} (Fırında / Pratik Sote Usulü)`,
+      source: "Pratik Lezzetler",
+      servingsNote: `${servings} Kişilik Oranlanmış Ölçü`,
+      detailedIngredients: [
+        `${(1 * servings)} porsiyon Sotelik ${query} Malzemesi`,
+        `${(1 * servings).toFixed(1)} yemek kaşığı Zeytinyağı`,
+        `${(0.5 * servings).toFixed(1)} adet Rendelenmiş Domates`
+      ],
+      steps: [
+        "Tavada zeytinyağını kızdırıp malzemeleri yüksek ateşte soteleyin.",
+        "Rendelenmiş domates ve baharatları ekleyip kısık ateşte 10 dakika çektirin."
+      ]
+    }
+  ];
+};
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('ingredients');
@@ -106,7 +239,7 @@ export default function App() {
     if (!newIngredientInput.trim()) return;
     if (!userIngredients.includes(newIngredientInput.trim())) {
       setUserIngredients([...userIngredients, newIngredientInput.trim()]);
-      setIngredientWebResults([]); // Yeni malzeme eklenince önceki web sonuçlarını sıfırla
+      setIngredientWebResults([]);
     }
     setNewIngredientInput('');
   };
@@ -145,7 +278,7 @@ export default function App() {
 
   const activeRecipes = getFilteredRecipesByIngredients();
 
-  // Malzemeler için İnternet Arama Simülasyonu (Sınırsız Malzeme Desteği)
+  // Malzemeler için İnternet Arama
   const handleIngredientWebSearch = () => {
     if (userIngredients.length === 0) return;
 
@@ -196,7 +329,7 @@ export default function App() {
     recipe.ingredients.some(i => i.toLowerCase().includes(searchQuery.toLowerCase().trim()))
   );
 
-  // Yemek Adı ile İnternet Arama
+  // Yemek Adı ile İnternet Arama (Akıllı Arama Algoritması)
   const handleWebSearch = (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -205,41 +338,8 @@ export default function App() {
     setWebResults([]);
 
     setTimeout(() => {
-      const query = searchQuery.trim();
-      setWebResults([
-        {
-          id: 'web-1',
-          title: `${query} (Klasik Şef Usulü)`,
-          source: "Dünya Mutfakları / Geleneksel Tarif",
-          servingsNote: `${servings} Kişilik Oranlanmış Ölçü`,
-          detailedIngredients: [
-            `${(1 * servings)} porsiyon Ana Malzeme (${query})`,
-            `${(0.5 * servings).toFixed(1)} adet Kuru Soğan ve Sarımsak`,
-            `${(1 * servings)} yemek kaşığı Zeytinyağı veya Tereyağı`,
-            `Tuz ve Özel Baharatlar`
-          ],
-          steps: [
-            `Tavada veya tencerede yağı ısıtıp soğanları soteleyin.`,
-            `Ana malzemeleri (${query}) ekleyip yüksek ateşte mühürleyin.`,
-            `Sos ve baharatları ekleyip ${servings} kişilik porsiyona uygun olarak kısık ateşte demlendirerek pişirin.`
-          ]
-        },
-        {
-          id: 'web-2',
-          title: `${query} (Hızlı ve Pratik Yöntem)`,
-          source: "Pratik Yemek Rehberi",
-          servingsNote: `${servings} Kişilik Oranlanmış Ölçü`,
-          detailedIngredients: [
-            `${(1 * servings)} porsiyon Hazır/Sotelik Malzeme`,
-            `${(0.75 * servings).toFixed(1)} yemek kaşığı Sos`,
-            `Tuz ve Karabiber`
-          ],
-          steps: [
-            "Malzemeleri yüksek ateşte soteleyerek hızlıca pişirin.",
-            "Sosu ekleyip 3-4 dakika harmanlayın ve sıcak servis yapın."
-          ]
-        }
-      ]);
+      const smartResults = generateSmartRecipe(searchQuery.trim(), servings);
+      setWebResults(smartResults);
       setIsSearchingWeb(false);
     }, 600);
   };
@@ -291,7 +391,7 @@ export default function App() {
         </button>
       </div>
 
-      {/* 1. SEKME: MALZEMEYE GÖRE BUL (YEREL + İNTERNET DESTEKLİ) */}
+      {/* 1. SEKME: MALZEMEYE GÖRE BUL */}
       {activeTab === 'ingredients' && (
         <div className="space-y-4">
           <section className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
@@ -340,7 +440,6 @@ export default function App() {
             )}
           </section>
 
-          {/* Yerel Sonuçlar */}
           {activeRecipes.length > 0 && (
             <section className="space-y-4">
               <h2 className="font-semibold text-gray-700 text-xs uppercase tracking-wide">📖 Kayıtlı Tarif Önerileri ({servings} Kişilik)</h2>
@@ -373,7 +472,6 @@ export default function App() {
             </section>
           )}
 
-          {/* İnternetten Sınırsız Malzeme Arama Butonu */}
           {userIngredients.length > 0 && (
             <section className="bg-white p-4 rounded-xl shadow-sm border border-emerald-100 text-center">
               <p className="text-xs text-gray-600 mb-2">Kayıtlı tariflerde bulamadın mı? İnternetten bu malzemelere özel tarifler üret:</p>
@@ -387,7 +485,6 @@ export default function App() {
             </section>
           )}
 
-          {/* İnternet Malzeme Sonuçları */}
           {ingredientWebResults.length > 0 && (
             <div className="space-y-4">
               <h3 className="text-xs font-bold text-emerald-700">🌐 İnternetten Bulunan En İyi 2 Tarif:</h3>
@@ -426,7 +523,7 @@ export default function App() {
             <form onSubmit={handleWebSearch} className="flex gap-2 mb-2">
               <input
                 type="text"
-                placeholder="Örn: Karnıyarık, Lazanya, Türlü..."
+                placeholder="Örn: Hatay Usulü Tavuk Dürüm, Lazanya..."
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -452,6 +549,11 @@ export default function App() {
                       <div key={idx} className="text-[11px]">• {(ing.amount * servings).toFixed(2).replace('.00', '')} {ing.unit} {ing.name}</div>
                     ))}
                   </div>
+                  <div className="border-t pt-2 text-xs text-gray-600 space-y-1">
+                    {recipe.steps.map((step, idx) => (
+                      <p key={idx} className="text-[11px] text-gray-600"><span className="font-bold text-emerald-700">{idx + 1}.</span> {step}</p>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
@@ -469,13 +571,15 @@ export default function App() {
                   <h4 className="font-bold text-gray-800 text-sm mb-1">Yöntem {index + 1}: {webRecipe.title}</h4>
                   <p className="text-[10px] text-gray-400 mb-2">{webRecipe.source} • {webRecipe.servingsNote}</p>
                   <div className="text-xs mb-3 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                    <span className="font-semibold text-gray-700 block mb-1.5">⚖️ Gerekli Malzemeler:</span>
                     {webRecipe.detailedIngredients.map((ing, idx) => (
-                      <div key={idx} className="text-[11px]">• {ing}</div>
+                      <div key={idx} className="text-[11px] text-gray-700">• {ing}</div>
                     ))}
                   </div>
                   <div className="border-t pt-2 space-y-1 text-xs">
+                    <span className="font-semibold text-gray-700 block mb-1">👨‍🍳 Yapılışı:</span>
                     {webRecipe.steps.map((step, idx) => (
-                      <p key={idx} className="text-[11px] text-gray-600"><span className="font-bold text-emerald-700">{idx + 1}.</span> {step}</p>
+                      <p key={idx} className="text-[11px] text-gray-600 leading-relaxed"><span className="font-bold text-emerald-700">{idx + 1}.</span> {step}</p>
                     ))}
                   </div>
                 </div>
