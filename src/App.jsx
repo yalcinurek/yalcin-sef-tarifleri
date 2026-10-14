@@ -1,61 +1,101 @@
 import React, { useState } from 'react';
 
-const INITIAL_STAPLES = ["Tuz", "Karabiber", "Zeytinyağı", "Limon", "Tereyağı", "Salça", "Soğan", "Sarımsak", "Mısır Unu", "Sıvı Yağ"];
+const INITIAL_STAPLES = ["Tuz", "Karabiber", "Zeytinyağı", "Limon", "Tereyağı", "Salça", "Soğan", "Sarımsak", "Un", "Sıvı Yağ"];
 
-// 18 KAPSAMLI MUTFAK KATEGORİSİ & PİŞİRME TEKNİKLERİ MOTORU
+// Tüm Kategorileri Kapsayan Gelişmiş ve Gerçekçi Malzeme Üretici Motoru
 const generateAdvancedRecipe = (query, servings) => {
   const q = query.toLowerCase().trim();
 
-  // 1. BALIK & DENİZ ÜRÜNLERİ (Tava / Kızartma / Fırın)
-  if (q.includes('hamsi') || q.includes('istavrit') || q.includes('balık') || q.includes('balik') || q.includes('levrek') || q.includes('somon') || q.includes('palamut') || q.includes('çipura')) {
-    if (q.includes('fırın') || q.includes('firin') || q.includes('buğulama')) {
+  // 1. ÇORBALAR (Mercimek, Mantar, Tarhana, Ezogelin vb.)
+  if (q.includes('çorba') || q.includes('corba')) {
+    if (q.includes('mantar') || q.includes('martar')) {
       return {
-        title: `${query.toUpperCase()} (Fırında / Buğulama)`,
-        servingsNote: `${servings} Kişilik Fırın Ölçüsü`,
-        category: "Balık & Deniz Ürünleri",
+        title: "KREMALI MANTAR ÇORBASI",
+        servingsNote: `${servings} Kişilik Çorba Ölçüsü`,
+        category: "Çorbalar",
         detailedIngredients: [
-          `${(200 * servings)} gram Temizlenmiş Balık (${query})`,
-          `${(0.5 * servings).toFixed(1)} adet Halka Doğranmış Kuru Soğan`,
-          `${(0.5 * servings).toFixed(1)} adet Limon (dilimlenmiş)`,
-          `${(1 * servings)} yemek kaşığı Sızma Zeytinyağı`,
-          `${(1 * servings)} adet Defne Yaprağı`,
-          `${(0.25 * servings).toFixed(1)} tatlı kaşığı Tuz ve Tane Karabiber`
+          `${(150 * servings)} gram Kültür Mantarı (dilimlenmiş)`,
+          `${(1 * servings)} yemek kaşığı Tereyağı`,
+          `${(1 * servings)} yemek kaşığı Buğday Unu`,
+          `${(0.5 * servings).toFixed(1)} su bardağı Sıvı Krema veya Süt`,
+          `${(2 * servings)} su bardağı Sıcak Su / Tavuk Suyu`,
+          `${(0.5 * servings).toFixed(1)} diş Ezilmiş Sarımsak`,
+          `Tuz ve Karabiber`
         ],
         steps: [
-          "Temizlenmiş balıkları bol soğuk suda yıkayıp süzgece alın ve kurulayın.",
-          "Fırın tepsisine veya borcama yağlı kağıt serin.",
-          "Halka doğranmış soğanları tepsinin tabanına dizip üzerine balıkları yerleştirin.",
-          "Balıkların üzerine limon dilimlerini, defne yaprağını, zeytinyağını, tuz ve karabiberi ekleyin.",
-          "Önceden ısıtılmış 200 derece fırında yaklaşık 20-25 dakika pişirip sıcak servis yapın."
+          "Mantarları nemli bezle temizleyip ince dilimler halinde doğrayın.",
+          "Tencerede tereyağını eritip sarımsak ve mantarları suyunu salıp çekene kadar soteleyin.",
+          "Unu ekleyip 1-2 dakika mantarlarla birlikte kavurun.",
+          "Sıcak suyu ve sütü/kremayı tel çırpıcıyla hızlıca karıştırarak ekleyin.",
+          "Kısık ateşte 10 dakika kaynatıp sıcak servis yapın."
         ]
       };
     }
-    // Tava / Kızartma
+    // Klasik Mercimek / Ezogelin Çorbası
     return {
-      title: `${query.toUpperCase()} (Tava / Çıtır Kızartma)`,
-      servingsNote: `${servings} Kişilik Tava Ölçüsü`,
-      category: "Balık & Deniz Ürünleri",
+      title: "GELENEKSEL SÜZME MERCİMEK ÇORBASI",
+      servingsNote: `${servings} Kişilik Çorba Ölçüsü`,
+      category: "Çorbalar",
       detailedIngredients: [
-        `${(200 * servings)} gram Temizlenmiş Balık (${query})`,
-        `${(2 * servings)} yemek kaşığı Mısır Unu (veya Buğday Unu)`,
-        `${(1.5 * servings).toFixed(1)} yemek kaşığı Sıvı Yağ (Tava için)`,
-        `${(0.5 * servings).toFixed(1)} tatlı kaşığı Tuz`,
-        `${(0.5 * servings).toFixed(1)} adet Limon (servis için)`
+        `${(0.5 * servings).toFixed(1)} su bardağı Kırmızı Mercimek (yıkanmış süzülmüş)`,
+        `${(0.25 * servings).toFixed(1)} adet Kuru Soğan`,
+        `${(0.25 * servings).toFixed(1)} adet Patates (küp doğranmış)`,
+        `${(0.25 * servings).toFixed(1)} adet Havuç`,
+        `${(1 * servings)} yemek kaşığı Sıvı Yağ / Tereyağı`,
+        `${(2 * servings)} su bardağı Sıcak Su veya Et Suyu`,
+        `Tuz, Kimyon ve Nane`
       ],
       steps: [
-        "Temizlenip yıkanan balıkları süzgece alıp suyunu iyice süzdürün.",
-        "Geniş bir kapta mısır ununu ve tuzu harmanlayın.",
-        "Balıkları mısır ununa bulayıp fazla ununu silkeleyin.",
-        "Balık tavasına yağın yarısını dökün. Balıkları tavanın kenarlarından başlayarak dairesel şekilde sıkıca dizin.",
-        "Orta ateşte alt yüzü altın sarısı kızarana kadar (yaklaşık 5-6 dk) pişirin.",
-        "Balık tavası kapağı veya düz bir tabak yardımıyla balıkları ters çevirin. Tavanın kenarından kalan yağı ekleyip diğer yüzünü de kızartın.",
-        "Sıcak olarak yanında limon dilimleri ve rokayla servis yapın."
+        "Soğan, patates ve havucu irice doğrayın.",
+        "Tencerede yağı ısıtıp sebzeleri ve yıkanmış mercimekleri 2 dakika soteleyin.",
+        "Sıcak suyu ekleyip mercimekler ve sebzeler tamamen yumuşayana kadar (yaklaşık 20 dk) haşlayın.",
+        "Pürüzsüz bir kıvam alana kadar blenderdan geçirin. Üzerine kızdırılmış tereyağı ve nane gezdirip servis yapın."
       ]
     };
   }
 
-  // 2. SALATALAR & SOĞUK MEZELER (Sıcak/Pişirme İşlemi Kesinlikle Yok!)
-  if (q.includes('salata') || q.includes('cacık') || q.includes('cacik') || q.includes('meze') || q.includes('piyaz') || q.includes('gavurdağı') || q.includes('haydari') || q.includes('kısır')) {
+  // 2. BALIK & DENİZ ÜRÜNLERİ (Hamsi, İstavrit, Levrek vb.)
+  if (q.includes('hamsi') || q.includes('istavrit') || q.includes('balık') || q.includes('balik') || q.includes('levrek') || q.includes('somon') || q.includes('palamut')) {
+    if (q.includes('fırın') || q.includes('firin')) {
+      return {
+        title: `${query.toUpperCase()} (Fırında Sebzeli)`,
+        servingsNote: `${servings} Kişilik Fırın Ölçüsü`,
+        category: "Balık & Deniz Ürünleri",
+        detailedIngredients: [
+          `${(200 * servings)} gram Temizlenmiş Balık (${query})`,
+          `${(0.5 * servings).toFixed(1)} adet Patates (halka doğranmış)`,
+          `${(0.5 * servings).toFixed(1)} adet Kuru Soğan ve Limon`,
+          `${(1 * servings)} yemek kaşığı Sızma Zeytinyağı`,
+          `Tuz, Karabiber ve Kekik`
+        ],
+        steps: [
+          "Fırın tepsisine halka doğranmış patatesleri ve soğanları dizin.",
+          "Üzerine balıkları yerleştirip zeytinyağı, limon dilimleri ve baharatları ekleyin.",
+          "200 derece fırında patatesler yumuşayana kadar 25 dakika pişirin."
+        ]
+      };
+    }
+    return {
+      title: `${query.toUpperCase()} (Mısır Unlu Tava)`,
+      servingsNote: `${servings} Kişilik Tava Ölçüsü`,
+      category: "Balık & Deniz Ürünleri",
+      detailedIngredients: [
+        `${(200 * servings)} gram Temizlenmiş Balık (${query})`,
+        `${(2 * servings)} yemek kaşığı Mısır Unu`,
+        `${(1.5 * servings).toFixed(1)} yemek kaşığı Sıvı Yağ`,
+        `${(0.5 * servings).toFixed(1)} tatlı kaşığı Tuz`,
+        `Limon dilimleri`
+      ],
+      steps: [
+        "Balıkları yıkayıp süzün ve mısır unu ile tuz karışımına bulayın.",
+        "Tavada sıvı yağı ısıtıp balıkları dairesel şekilde sıkıca dizin.",
+        "Arkalı önlü altın sarısı olana kadar kızartıp limonla servis yapın."
+      ]
+    };
+  }
+
+  // 3. SALATALAR & SOĞUK MEZELER (Pişirme Yok)
+  if (q.includes('salata') || q.includes('cacık') || q.includes('meze') || q.includes('piyaz') || q.includes('gavurdağı') || q.includes('kısır')) {
     if (q.includes('çoban') || q.includes('coban')) {
       return {
         title: "GELENEKSEL ÇOBAN SALATASI",
@@ -63,160 +103,153 @@ const generateAdvancedRecipe = (query, servings) => {
         category: "Salatalar & Soğuk Mezeler",
         detailedIngredients: [
           `${(1 * servings)} adet Orta Boy Domates (küp doğranmış)`,
-          `${(1 * servings)} adet Salatalık (kabukları soyulup küp doğranmış)`,
-          `${(0.5 * servings).toFixed(1)} adet Yeşil Sivri Biber (ince kıyılmış)`,
-          `${(0.25 * servings).toFixed(1)} adet Kuru Soğan (piyazlık doğranmış)`,
-          `${(0.25 * servings).toFixed(1)} demet İnce Kıyılmış Maydanoz`,
+          `${(1 * servings)} adet Salatalık (küp doğranmış)`,
+          `${(0.5 * servings).toFixed(1)} adet Yeşil Biber ve Çeyrek Soğan`,
+          `${(0.25 * servings).toFixed(1)} demet Maydanoz`,
           `${(1 * servings)} yemek kaşığı Sızma Zeytinyağı`,
-          `${(0.5 * servings).toFixed(1)} adet Taze Limon Suyu veya Nar Ekşisi`,
-          `${(0.25 * servings).toFixed(1)} tatlı kaşığı Tuz`
+          `${(0.5 * servings).toFixed(1)} adet Limon Suyu`,
+          `Tuz`
         ],
         steps: [
-          "Domates, salatalık ve biberleri eşit küçüklükte doğrayın.",
-          "Piyazlık doğranmış soğanları az tuzla hafifçe ovarak acısını çıkarın ve yıkayıp süzün.",
-          "Doğranmış tüm sebzeleri ve ince kıyılmış maydanozu derin bir salata kasesinde birleştirin.",
-          "Zeytinyağı, limon suyu (veya nar ekşisi) ve tuzu sos kabında çırpın.",
-          "Sosu salatanın üzerine döküp zedelemeden karıştırın ve bekletmeden servis yapın."
+          "Domates, salatalık, biber ve soğanı küçük küpler halinde doğrayın.",
+          "Maydanozu ince kıyıp ekleyin.",
+          "Zeytinyağı, limon suyu ve tuzu karıştırıp salatanın üzerine dökerek taze servis yapın."
         ]
       };
     }
     return {
-      title: `${query.toUpperCase()} (Taze Soğuk Hazırlanış)`,
-      servingsNote: `${servings} Kişilik Ölçü`,
+      title: `${query.toUpperCase()} (Soğuk Hazırlanış)`,
+      servingsNote: `${servings} Kişilik Taze Ölçü`,
       category: "Salatalar & Soğuk Mezeler",
       detailedIngredients: [
-        `${(1 * servings)} porsiyon Taze Malzeme (${query} için)`,
-        `${(1 * servings)} yemek kaşığı Sızma Zeytinyağı / Süzme Yoğurt`,
-        `${(0.5 * servings).toFixed(1)} adet Limon Suyu veya Sarımsak`,
-        `Tuz ve Taze Yeşillikler`
+        `${(1 * servings)} porsiyon Taze Doğranmış Sebzeler / Yoğurt`,
+        `${(1 * servings)} yemek kaşığı Zeytinyağı`,
+        `Limon, Tuz ve Baharatlar`
       ],
       steps: [
-        "Tüm malzemeleri yıkayıp soğuk olarak doğrayın veya rendeyleyin.",
-        "Sos malzemelerini ayrı bir kapta karıştırın.",
-        "Sosu malzemelerin üzerine döküp hafifçe harmanlayarak soğuk servis yapın."
+        "Malzemeleri taze olarak doğrayıp kaseye alın.",
+        "Zeytinyağı, limon ve tuzu ekleyip harmanlayarak servis edin."
       ]
     };
   }
 
-  // 3. KAHVALTILIKLAR & YUMURTALI TARİFLER
-  if (q.includes('menemen') || q.includes('omlet') || q.includes('yumurta') || q.includes('krep') || q.includes('pankek') || q.includes('kuymak') || q.includes('mıhlama')) {
-    return {
-      title: `${query.toUpperCase()}`,
-      servingsNote: `${servings} Kişilik Kahvaltılık Ölçü`,
-      category: "Kahvaltılıklar & Yumurtalı Tarifler",
-      detailedIngredients: [
-        `${(1 * servings)} adet Yumurta`,
-        `${(1 * servings)} adet Doğranmış Domates / Biber veya Peynir`,
-        `${(0.75 * servings).toFixed(1)} yemek kaşığı Tereyağı / Sıvı Yağ`,
-        `Tuz, Karabiber ve Pul Biber`
-      ],
-      steps: [
-        "Tavada tereyağını eritin, kullanılıyorsa biber ve domatesleri yumuşayana kadar soteleyin.",
-        "Yumurtaları tuz ve baharatla hafifçe çırpın.",
-        "Tavaya döküp kısık ateşte istediğiniz kıvama gelene kadar pişirin."
-      ]
-    };
-  }
-
-  // 4. DÜRÜM, DÖNER & SOKAK LEZZETLERİ
-  if (q.includes('dürüm') || q.includes('durum') || q.includes('döner') || q.includes('doner') || q.includes('tantuni') || q.includes('tako') || q.includes('taco') || q.includes('hatay')) {
-    return {
-      title: `${query.toUpperCase()} (Sokak Lezzeti & Soslu Dürüm)`,
-      servingsNote: `${servings} Kişilik Ölçü`,
-      category: "Dürüm & Sokak Lezzetleri",
-      detailedIngredients: [
-        `${(140 * servings)} gram Et / Tavuk (Jülyen doğranmış)`,
-        `${(1 * servings)} adet Dürüm Lavaşı / Ekmek`,
-        `${(1.5 * servings).toFixed(1)} yemek kaşığı Özel Salçalı / Sarımsaklı Sos`,
-        `${(0.5 * servings).toFixed(1)} porsiyon Patates Kızartması / Turşu`,
-        `Sıvı Yağ ve Baharatlar`
-      ],
-      steps: [
-        "Etleri veya tavukları yüksek ateşte tavada sotelerken kızartın.",
-        "Özel salçalı ve sarımsaklı sosu tavada kaynatın.",
-        "Lavaşı tavadaki etlerin yağına ve sosa bastırın.",
-        "Lavaşa eti, kızarmış patatesi ve sosu ekleyip sıkıca sarın.",
-        "Tost makinesinde veya tavada dışı çıtır olana kadar bastırarak ısıtın."
-      ]
-    };
-  }
-
-  // 5. ÇORBALAR
-  if (q.includes('çorba') || q.includes('corba')) {
-    return {
-      title: `${query.toUpperCase()} (Tencere Çorbası)`,
-      servingsNote: `${servings} Kişilik Çorba Ölçüsü`,
-      category: "Çorbalar",
-      detailedIngredients: [
-        `${(0.5 * servings).toFixed(1)} su bardağı Ana Çorba Malzemesi (${query})`,
-        `${(1.5 * servings)} su bardağı Sıcak Su / Et Suyu`,
-        `${(0.5 * servings).toFixed(1)} yemek kaşığı Un ve Tereyağı/Yağ`,
-        `${(0.25 * servings).toFixed(1)} tatlı kaşığı Tuz ve Baharatlar`
-      ],
-      steps: [
-        "Tencerede yağ ve unu hafifçe kavurun.",
-        "Ana malzemeleri ve sıcak suyu çırpıcıyla karıştırarak tencereye ekleyin.",
-        "Kısık ateşte yumuşayana kadar pişirip blenderdan geçirin. Üzerine kızdırılmış yağ dökerek servis yapın."
-      ]
-    };
-  }
-
-  // 6. PİLAVLAR & MAKARNALAR
+  // 4. PİLAVLAR & MAKARNALAR
   if (q.includes('pilav') || q.includes('makarna') || q.includes('erişte') || q.includes('eriste') || q.includes('spagetti')) {
+    if (q.includes('pirinç') || q.includes('prinç')) {
+      return {
+        title: "KLASİK PİRİNÇ PİLAVI",
+        servingsNote: `${servings} Kişilik Pilav Ölçüsü`,
+        category: "Pilavlar & Makarnalar",
+        detailedIngredients: [
+          `${(0.75 * servings).toFixed(1)} su bardağı Baldo Pirinç (ıslatılmış)`,
+          `${(0.25 * servings).toFixed(1)} çay bardağı Tel Şehriye`,
+          `${(1 * servings)} yemek kaşığı Tereyağı`,
+          `${(0.5 * servings).toFixed(1)} yemek kaşığı Sıvı Yağ`,
+          `${(1.25 * servings)} su bardağı Kaynar Su veya Tavuk Suyu`,
+          `1 tatlı kaşığı Tuz`
+        ],
+        steps: [
+          "Pirinçleri ılık tuzlu suda 20 dk bekletip nişastası gidene kadar yıkayın ve süzün.",
+          "Tencerede yağları eritip tel şehriyeleri rengi dönene kadar kavurun.",
+          "Süzülen pirinçleri ekleyip 3-4 dakika şeffaflaşana kadar kavurun.",
+          "Kaynar su ve tuzu ekleyip kapağını kapatın. Kısık ateşte suyunu çekene kadar pişirip 15 dk demlendirin."
+        ]
+      };
+    }
     return {
-      title: `${query.toUpperCase()}`,
+      title: `${query.toUpperCase()} (Haşlama & Soslu)`,
       servingsNote: `${servings} Kişilik Ölçü`,
       category: "Pilavlar & Makarnalar",
       detailedIngredients: [
-        `${(0.75 * servings).toFixed(1)} su bardağı Pirinç / Makarna / Şehriye`,
-        `${(1 * servings)} su bardağı Sıcak Su veya Haşlama Suyu`,
-        `${(1 * servings)} yemek kaşığı Tereyağı / Zeytinyağı`,
-        `Tuz ve Sos Malzemeleri`
+        `${(100 * servings)} gram Makarna / Erişte`,
+        `${(1 * servings)} yemek kaşığı Sıvı Yağ / Tereyağı`,
+        `${(0.5 * servings).toFixed(1)} su bardağı Domates Sosu veya Peynir`,
+        `Bol Su ve Tuz (Haşlamak için)`
       ],
       steps: [
-        "Pilav ise pirinçleri kavurup kaynar su ekleyerek demlendirin.",
-        "Makarna ise bol tuzlu suda haşlayıp süzün ve sosla harmanlayın."
+        "Bol tuzlu kaynar suda makarnayı paket süresine göre haşlayıp süzün.",
+        "Tavada yağ ve sosu ısıtıp makarnayı ekleyin ve harmanlayarak sıcak servis yapın."
       ]
     };
   }
 
-  // 7. İZGARA & MÜHÜRLEME YEMEKLERİ
-  if (q.includes('köfte') || q.includes('kofte') || q.includes('biftek') || q.includes('bonfile') || q.includes('pirzola') || q.includes('ızgara') || q.includes('izgara')) {
+  // 5. KAHVALTILIKLAR & YUMURTA
+  if (q.includes('menemen') || q.includes('omlet') || q.includes('yumurta') || q.includes('krep') || q.includes('pankek')) {
     return {
-      title: `${query.toUpperCase()} (Izgara / Mühürleme)`,
-      servingsNote: `${servings} Kişilik Izgara Ölçüsü`,
-      category: "Izgara Yemekleri",
+      title: `${query.toUpperCase()}`,
+      servingsNote: `${servings} Kişilik Kahvaltılık`,
+      category: "Kahvaltılıklar & Yumurtalı Tarifler",
       detailedIngredients: [
-        `${(150 * servings)} gram Et / Köfte / Tavuk`,
-        `${(0.5 * servings).toFixed(1)} yemek kaşığı Zeytinyağı`,
-        `${(0.25 * servings).toFixed(1)} adet Soğan / Sarımsak`,
-        `Kekik, Kimyon, Tuz ve Karabiber`
+        `${(1 * servings)} adet Yumurta`,
+        `${(1 * servings)} adet Domates ve Biber`,
+        `${(0.75 * servings).toFixed(1)} yemek kaşığı Tereyağı`,
+        `Tuz ve Karabiber`
       ],
       steps: [
-        "Eti veya köfte harcını baharatlar ve zeytinyağı ile marine edin.",
-        "Döküm tavayı veya ızgarayı dumanı çıkana kadar yüksek ateşte kızdırın.",
-        "Etleri tavaya dizip yüksek ateşte her iki yüzünü de mühürleyerek pişirin."
+        "Tavada tereyağını eritip doğranmış biber ve domatesleri soteleyin.",
+        "Yumurtaları kırıp tuz ekleyin ve istediğiniz kıvama gelene kadar karıştırarak pişirin."
       ]
     };
   }
 
-  // 8. TENCERE & SULU EV YEMEKLERİ (VARSAYILAN SICAK TENCERE)
+  // 6. DÜRÜM VE SOKAK LEZZETLERİ
+  if (q.includes('dürüm') || q.includes('döner') || q.includes('tantuni') || q.includes('hatay')) {
+    return {
+      title: `${query.toUpperCase()} (Soslu Sokak Lezzeti)`,
+      servingsNote: `${servings} Kişilik Ölçü`,
+      category: "Dürüm & Sokak Lezzetleri",
+      detailedIngredients: [
+        `${(140 * servings)} gram Jülyen Et veya Tavuk`,
+        `${(1 * servings)} adet Dürüm Lavaşı`,
+        `${(1.5 * servings).toFixed(1)} yemek kaşığı Özel Salçalı Sos`,
+        `Sıvı Yağ, Mayonez ve Baharatlar`
+      ],
+      steps: [
+        "Etleri tavada yüksek ateşte soteleyin.",
+        "Lavaşı sosa bulayıp tavukları ve sosu içine ekleyin.",
+        "Dürüm yapıp tost makinesinde ısıtın."
+      ]
+    };
+  }
+
+  // 7. ET, TAVUK SOTE & IZGARA YEMEKLERİ
+  if (q.includes('tavuk') || q.includes('et') || q.includes('sote') || q.includes('köfte') || q.includes('kofte')) {
+    return {
+      title: `${query.toUpperCase()} (Tavada / Izgara Usulü)`,
+      servingsNote: `${servings} Kişilik Ölçü`,
+      category: "Et & Tavuk Yemekleri",
+      detailedIngredients: [
+        `${(150 * servings)} gram Kuşbaşı Et veya Tavuk / Kıyma`,
+        `${(0.5 * servings).toFixed(1)} adet Kuru Soğan ve Biber`,
+        `${(0.5 * servings).toFixed(1)} yemek kaşığı Salça`,
+        `${(1 * servings)} yemek kaşığı Sıvı Yağ`,
+        `Tuz, Kimyon, Karabiber ve Kekik`
+      ],
+      steps: [
+        "Tavada yağı kızdırıp etleri veya tavukları ekleyin; suyunu salıp çekene kadar soteleyin.",
+        "Soğan ve biberleri ekleyip kavurmaya devam edin.",
+        "Salça ve baharatları ekleyip 5 dakika kısık ateşte pişirip sıcak servis yapın."
+      ]
+    };
+  }
+
+  // 8. GENEL TENCERE VE EV YEMEKLERİ (VARSAYILAN)
   return {
-    title: `${query.toUpperCase()} (Tencere Yemeği)`,
+    title: `${query.toUpperCase()} (Ev Usulü Yemek)`,
     servingsNote: `${servings} Kişilik Tencere Ölçüsü`,
     category: "Tencere & Sulu Yemekler",
     detailedIngredients: [
-      `${(120 * servings)} gram Doğranmış Ana Sebze / Et (${query})`,
-      `${(0.25 * servings).toFixed(1)} adet Kuru Soğan`,
-      `${(0.5 * servings).toFixed(1)} diş Sarımsak`,
-      `${(0.5 * servings).toFixed(1)} yemek kaşığı Domates / Biber Salçası`,
-      `${(1 * servings).toFixed(1)} yemek kaşığı Sıvı Yağ / Zeytinyağı`,
+      `${(120 * servings)} gram Doğranmış Ana Malzeme (${query})`,
+      `${(0.25 * servings).toFixed(1)} adet Kuru Soğan ve Sarımsak`,
+      `${(0.5 * servings).toFixed(1)} yemek kaşığı Salça`,
+      `${(1 * servings)} yemek kaşığı Sıvı Yağ`,
+      `${(1 * servings)} su bardağı Sıcak Su`,
       `Tuz ve Karabiber`
     ],
     steps: [
-      "Tencerede yağı ısıtıp doğranmış soğan ve sarımsağı soteleyin.",
-      "Salçayı ve ana malzemeleri ekleyip 3-4 dakika kavurun.",
-      "Sebzelerin hizasına gelecek kadar sıcak su ekleyip kısık ateşte demlendirerek pişirin."
+      "Tencerede yağı ısıtıp soğanları pembeleşene kadar soteleyin.",
+      "Salçayı ve ana malzemeleri ekleyip kavurun.",
+      "Sıcak su ekleyip kısık ateşte demlendirerek pişirin."
     ]
   };
 };
@@ -225,13 +258,11 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('ingredients');
   const [servings, setServings] = useState(2);
 
-  // Malzemeye göre arama state'leri
   const [kitchenStaples, setKitchenStaples] = useState(INITIAL_STAPLES);
   const [newStapleInput, setNewStapleInput] = useState('');
   const [userIngredients, setUserIngredients] = useState([]);
   const [newIngredientInput, setNewIngredientInput] = useState('');
 
-  // Yemek adıyla arama state'i
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleAddStaple = (e) => {
@@ -260,14 +291,13 @@ export default function App() {
     setUserIngredients(userIngredients.filter(i => i !== item));
   };
 
-  // Akıllı Arama Sonucu
   const searchRecipeResult = searchQuery.trim() !== '' ? generateAdvancedRecipe(searchQuery, servings) : null;
 
   return (
     <div className="max-w-md mx-auto bg-gray-50 min-h-screen p-4 font-sans pb-12">
       <header className="text-center mb-4 pt-2">
         <h1 className="text-2xl font-bold text-emerald-600 tracking-tight">👨‍🍳 Şef Yalçın Tarifleri</h1>
-        <p className="text-xs text-gray-500 mt-1">18 Kategorili Akıllı Mutfak Asistanı</p>
+        <p className="text-xs text-gray-500 mt-1">Akıllı ve Kusursuz Mutfak Asistanı</p>
       </header>
 
       {/* Porsiyon / Kişi Sayısı Seçimi */}
@@ -340,7 +370,7 @@ export default function App() {
             <form onSubmit={handleAddIngredient} className="flex gap-2 mb-3">
               <input
                 type="text"
-                placeholder="Örn: Hamsi, Patates, Yumurta..."
+                placeholder="Örn: Mercimek, Patates, Tavuk..."
                 value={newIngredientInput}
                 onChange={(e) => setNewIngredientInput(e.target.value)}
                 className="flex-1 border rounded-lg px-3 py-2 text-xs focus:outline-emerald-500"
@@ -365,11 +395,11 @@ export default function App() {
       {activeTab === 'search' && (
         <div className="space-y-4">
           <section className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-            <h2 className="font-semibold text-gray-700 text-xs uppercase tracking-wide mb-2">🔍 Yemek, Balık veya Salata Ara</h2>
+            <h2 className="font-semibold text-gray-700 text-xs uppercase tracking-wide mb-2">🔍 Yemek veya Çorba Ara</h2>
             <form onSubmit={(e) => e.preventDefault()} className="flex gap-2 mb-2">
               <input
                 type="text"
-                placeholder="Örn: Hamsi Tava, Çoban Salata, Hatay Dürüm..."
+                placeholder="Örn: Mercimek Çorbası, Pirinç Pilavı, Hamsi Tava..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1 border rounded-lg px-3 py-2 text-xs focus:outline-emerald-500"
