@@ -15,163 +15,116 @@ const normalizeText = (text) => {
     .trim();
 };
 
-// 1. DİNAMİK MALZEME ARAMA MOTORU (Girilen malzemeleri BİREBİR işler)
+// --- ANLAMSAL (SEMANTİK) MALZEME AYRIŞTIRICI ---
+const BASE_INGREDIENTS = ['yufka', 'lavas', 'milfoy', 'ekmek', 'pide', 'makarna', 'pirinc', 'bulgur'];
+const SAUCE_INGREDIENTS = ['sut', 'yumurta', 'yag', 'tereyagi', 'zeytinyagi', 'yoğurt', 'yogurt', 'krema'];
+
+// 1. GENEL VE DİNAMİK MALZEME MOTORU
 const generateRecipesFromIngredients = (ingredients, servings) => {
   if (!ingredients || ingredients.length === 0) return [];
 
-  const normIngs = ingredients.map(i => normalizeText(i));
-  const mainIngsText = ingredients.join(" ve ");
+  const normalizedInput = ingredients.map(i => ({ raw: i, norm: normalizeText(i) }));
 
-  // --- A) YUFKA VE HAMUR İŞLERİ (BÖREK) ---
-  if (normIngs.some(i => i.includes('yufka'))) {
-    // İç harç tespiti (Patates mi, Peynir mi, Kıyma mı, Ispanak mı?)
-    let fillingName = "Sebzeli";
-    let fillingIngredients = [];
-    let fillingPrep = "";
+  // Taban / Hamur malzemelerini ayıkla
+  const baseItems = normalizedInput.filter(item => BASE_INGREDIENTS.some(b => item.norm.includes(b)));
+  
+  // İç Harç / Ana Malzemeleri ayıkla (Taban ve temel soslar dışındakiler)
+  const fillingItems = normalizedInput.filter(
+    item => !BASE_INGREDIENTS.some(b => item.norm.includes(b)) && !SAUCE_INGREDIENTS.some(s => item.norm.includes(s))
+  );
 
-    if (normIngs.some(i => i.includes('patates'))) {
-      fillingName = "Patatesli";
-      fillingIngredients = [
-        `${(1 * servings)} adet Patates (haşlanıp ezilmiş veya rendelenmiş)`,
-        `${(0.25 * servings).toFixed(1)} adet Kuru Soğan (küp doğranıp kavrulmuş)`,
-        `Toz Kırmızı Biber, Karabiber ve Tuz`
-      ];
-      fillingPrep = "Haşlanmış patatesleri ezin; az yağda kavrulmuş soğan, tuz ve toz biberle karıştırarak patatesli iç harcı hazırlayın.";
-    } else if (normIngs.some(i => i.includes('kiyyma') || i.includes('kiyma') || i.includes('et'))) {
-      fillingName = "Kıymalı";
-      fillingIngredients = [
-        `${(100 * servings)} gram Dana Kıyma`,
-        `${(0.5 * servings).toFixed(1)} adet Kuru Soğan`,
-        `Carabiber, Pul Biber ve Tuz`
-      ];
-      fillingPrep = "Kıymayı doğranmış soğanla tavada suyunu çekene kadar kavurup baharatlarını ekleyerek kıymalı harcı hazırlayın.";
-    } else if (normIngs.some(i => i.includes('lor') || i.includes('peynir'))) {
-      fillingName = "Peynirli / Lorlu";
-      fillingIngredients = [
-        `${(100 * servings)} gram Lor / Beyaz Peynir`,
-        `${(0.25 * servings).toFixed(1)} demet Maydanoz (kıyılmış)`,
-        `Pul Biber`
-      ];
-      fillingPrep = "Peyniri / loru ince kıyılmış maydanoz ve pul biberle harmanlayıp iç harcı hazırlayın.";
-    } else {
-      // Genel Börek Harcı
-      fillingIngredients = ingredients
-        .filter(i => !normalizeText(i).includes('yufka'))
-        .map(i => `${(1 * servings)} porsiyon ${i}`);
-      fillingPrep = `Girdiğiniz (${mainIngsText}) malzemelerini doğrayıp karıştırarak harcı hazırlayın.`;
-    }
+  const mainFillingText = fillingItems.length > 0 
+    ? fillingItems.map(i => i.raw).join(", ") 
+    : "Sade / Peynirli";
 
+  // --- MANTIK 1: YUFKA / MİLFÖY / BÖREK YAPIŞI ---
+  if (baseItems.some(i => i.norm.includes('yufka') || i.norm.includes('milfoy'))) {
     return [
       {
-        id: 'borek-dynamic',
-        title: `Pratik Tava Böreği (${fillingName})`,
+        id: 'dynamic-borek',
+        title: `Pratik Tava Böreği (${fillingItems.length > 0 ? fillingItems.map(i => i.raw).join(" & ") : "Özel Harçlı"})`,
         category: "Börek & Hamur İşleri",
         servingsNote: `${servings} Kişilik Ölçü`,
         detailedIngredients: [
           `${(1 * servings)} adet Günlük Yufka`,
-          ...fillingIngredients,
+          ...fillingItems.map(item => `${(100 * servings)} gram / porsiyon ${item.raw}`),
           `${(0.5 * servings).toFixed(1)} çay bardağı Süt & Sıvı Yağ / Yumurta Karışımı (sos için)`,
-          `${(1 * servings)} yemek kaşığı Tereyağı veya Sıvı Yağ (tava için)`
+          `${(1 * servings)} yemek kaşığı Tereyağı / Sıvı Yağ (tava için)`,
+          `Tuz ve İsteğe Göre Baharatlar`
         ],
         steps: [
-          fillingPrep,
-          "Geniş bir tavayı hafifçe yağlayın. İlk yufkayı kenarları tavadan dışarı taşacak şekilde serin.",
-          "Süt ve yağ karışımını yufkanın üzerine fırçayla sürün. Kalan yufkaları parçalayarak büzüştürüp tavaya yerleştirin.",
-          `Hazırladığınız ${fillingName.toLowerCase()} iç harcı yufkanın üzerine eşit şekilde yayın.`,
+          `İç harç hazırlığı: (${mainFillingText}) malzemelerini temizleyip ince doğrayın. Gerekiyorsa az yağda Soğan ile soteleyip soğumaya bırakın.`,
+          "Tavayı yağlayın. İlk yufkayı kenarları tavadan dışarı taşacak şekilde serin.",
+          "Süt ve yağ karışımını yufkanın üzerine fırça ile sürün. Kalan yufkaları parçalayıp büzüştürerek tavaya yerleştirin.",
+          `Hazırladığınız (${mainFillingText}) iç harcını eşit şekilde yufkanın üzerine yayın.`,
           "Tavadan taşan yufka kenarlarını içe doğru kapatın.",
-          "Kapağı kapalı olarak kısık-orta ateşte altı kızarana kadar pişirin. Düz bir tabakla çevirip diğer yüzünü de kızartarak sıcak servis yapın."
+          "Kapağı kapalı olarak kısık-orta ateşte altı kızarana kadar pişirin. Düz bir tabakla çevirip diğer yüzünü de kızartıp sıcak servis yapın."
         ]
       }
     ];
   }
 
-  // --- B) TAVUK VE LİMON / SOS YEMEKLERİ ---
-  if (normIngs.some(i => i.includes('tavuk')) && normIngs.some(i => i.includes('limon'))) {
+  // --- MANTIK 2: LAVAŞ / DÜRÜM / SOKAK LEZZETİ ---
+  if (baseItems.some(i => i.norm.includes('lavas') || i.norm.includes('ekmek') || i.norm.includes('pide'))) {
     return [
       {
-        id: 'tavuk-limon',
-        title: "Tavada Limonlu & Soslu Tavuk Sote",
-        category: "Tavuk Yemekleri",
+        id: 'dynamic-durum',
+        title: `Nefis Dürüm / Sandviç (${mainFillingText})`,
+        category: "Dürüm & Sokak Lezzetleri",
         servingsNote: `${servings} Kişilik Ölçü`,
         detailedIngredients: [
-          `${(150 * servings)} gram Jülyen Tavuk Göğsü`,
-          `${(0.5 * servings).toFixed(1)} adet Taze Limon Suyu`,
-          `${(1 * servings)} yemek kaşığı Zeytinyağı veya Tereyağı`,
-          `${(0.25 * servings).toFixed(1)} adet Soğan ve Sarımsak`,
-          `Tuz, Karabiber ve Kekik`
+          `${(1 * servings)} adet Lavaş / Ekmek`,
+          ...fillingItems.map(item => `${(120 * servings)} gram ${item.raw}`),
+          `${(1 * servings)} yemek kaşığı Sos / Mayonez / Salça`,
+          `Tuz ve Baharatlar`
         ],
         steps: [
-          "Tavada yağı ısıtıp jülyen doğranmış tavukları yüksek ateşte soteleyin.",
-          "Soğan ve sarımsakları ekleyip kavurmaya devam edin.",
-          "Taze limon suyunu ve baharatları ekleyip kısık ateşte sosu çektirin ve servis yapın."
+          `Ana malzemelerinizi (${mainFillingText}) tavada yüksek ateşte soteleyin.`,
+          "Lavaşı / ekmeği ısıtıp soslayın.",
+          "Sotelenen malzemeleri ve garnitürleri ekleyip dürüm yapın ve tost makinesinde ısıtıp servis edin."
         ]
       }
     ];
   }
 
-  // --- C) BALIK ÇEŞİTLERİ (Çupra, Hamsi, Levrek vb.) ---
-  if (normIngs.some(i => i.includes('cupra') || i.includes('hamsi') || i.includes('balik') || i.includes('levrek') || i.includes('somon'))) {
-    const isTava = normIngs.some(i => i.includes('hamsi') || i.includes('istavrit') || i.includes('tava'));
+  // --- MANTIK 3: BALIK YEMEKLERİ ---
+  if (normalizedInput.some(i => i.norm.includes('cupra') || i.norm.includes('hamsi') || i.norm.includes('balik') || i.norm.includes('levrek') || i.norm.includes('somon'))) {
+    const isTava = normalizedInput.some(i => i.norm.includes('hamsi') || i.norm.includes('istavrit') || i.norm.includes('tava'));
     return [
       {
-        id: 'fish-dynamic',
-        title: isTava ? `${mainIngsText.toUpperCase()} (Mısır Unlu Tava)` : `${mainIngsText.toUpperCase()} (Fırında Limonlu)`,
+        id: 'dynamic-fish',
+        title: `${ingredients.join(" & ").toUpperCase()} (${isTava ? "Tava" : "Fırında"})`,
         category: "Balık Yemekleri",
         servingsNote: `${servings} Kişilik Ölçü`,
         detailedIngredients: [
-          `${(200 * servings)} gram Temizlenmiş Balık (${mainIngsText})`,
-          `${(1.5 * servings).toFixed(1)} yemek kaşığı Zeytinyağı / Sıvı Yağ`,
+          `${(200 * servings)} gram Temizlenmiş Balık (${ingredients.join(", ")})`,
+          `${(1.5 * servings).toFixed(1)} yemek kaşığı Zeytinyağı`,
           `${(0.5 * servings).toFixed(1)} adet Limon ve Soğan`,
-          `Tuz ve Defne Yaprağı`
+          `Tuz, Karabiber ve Defne Yaprağı`
         ],
         steps: isTava ? [
-          "Balıkları yıkayıp süzün, mısır unu ve tuz karışımına bulayın.",
-          "Yağlanmış tavaya dairesel dizip arkalı önlü kızartın ve limonla servis edin."
+          "Balıkları mısır ununa bulayıp kızgın tavada arkalı önlü kızartın."
         ] : [
-          "Balıkları zeytinyağı, tuz ve limon ile ovup marine edin.",
-          "Fırın tepsisine soğan dilimleri üzerine balığı dizip 200 derece fırında 25 dakika pişirin."
+          "Balıkları zeytinyağı, tuz ve limon ile marine edip fırında 200 derecede 25 dakika pişirin."
         ]
       }
     ];
   }
 
-  // --- D) PATATES VE YUMURTA ---
-  if (normIngs.some(i => i.includes('patates')) && normIngs.some(i => i.includes('yumurta'))) {
-    return [
-      {
-        id: 'patates-yumurta',
-        title: "Küp Patatesli Yumurta",
-        category: "Kahvaltılık & Pratik",
-        servingsNote: `${servings} Kişilik Ölçü`,
-        detailedIngredients: [
-          `${(1 * servings)} adet Patates (küçük küpler halinde doğranmış)`,
-          `${(1 * servings)} adet Yumurta`,
-          `${(1 * servings)} yemek kaşığı Sıvı Yağ veya Tereyağı`,
-          `Tuz, Karabiber ve Pul Biber`
-        ],
-        steps: [
-          "Patatesleri minik küpler halinde doğrayın.",
-          "Tavada yağı kızdırıp patatesleri yumuşayıp üzeri hafif kızarana kadar pişirin.",
-          "Tuz ve baharatları ekleyip yumurtaları üzerine kırın. İstediğiniz kıvamda pişirip servis yapın."
-        ]
-      }
-    ];
-  }
-
-  // --- E) DİĞER TÜM DOĞRUDAN MALZEME KOMBİNASYONLARI ---
+  // --- MANTIK 4: DİĞER TÜM BİLEŞİKLER İÇİN GENEL DİNAMİK MUTFAK MOTORU ---
   return [
     {
       id: 'dynamic-general',
-      title: `${mainIngsText.toUpperCase()} Yemeği`,
-      category: "Pratik Mutfak",
+      title: `${ingredients.join(" ve ").toUpperCase()} Sote / Yemeği`,
+      category: "Pratik Ev Mutfakları",
       servingsNote: `${servings} Kişilik Ölçü`,
-      detailedIngredients: ingredients.map(ing => `${(1 * servings)} porsiyon ${ing}`).concat([
+      detailedIngredients: ingredients.map(ing => `${(1 * servings)} porsiyon / gram ${ing}`).concat([
         `${(1 * servings)} yemek kaşığı Zeytinyağı / Tereyağı`,
-        `Tuz ve Karabiber`
+        `Tuz ve Baharatlar`
       ]),
       steps: [
-        `Malzemelerinizi (${mainIngsText}) yıkayıp pişirmeye uygun şekilde doğrayın.`,
-        `Uyguna tavada veya tencerede az yağ ile kendi buharında/suyunda pişirin.`,
+        `Malzemelerinizi (${ingredients.join(", ")}) temizleyip doğrayın.`,
+        `Uygun tavada veya tencerede yağ ile kendi suyunu çekene kadar pişirin.`,
         `Baharatlarını ekleyip sıcak servis edin.`
       ]
     }
@@ -189,7 +142,7 @@ const generateAdvancedRecipe = (query, servings) => {
       category: "Börek & Hamur İşleri",
       detailedIngredients: [
         `${(1 * servings)} adet Yufka`,
-        `${(100 * servings)} gram Peynir / Patates / Kıymalı Harç`,
+        `${(100 * servings)} gram Özel Harç (${query})`,
         `${(0.5 * servings).toFixed(1)} çay bardağı Süt ve Sıvı Yağ`,
         `Tereyağı`
       ],
@@ -275,7 +228,7 @@ export default function App() {
     <div className="max-w-md mx-auto bg-gray-50 min-h-screen p-4 font-sans pb-12">
       <header className="text-center mb-4 pt-2">
         <h1 className="text-2xl font-bold text-emerald-600 tracking-tight">👨‍🍳 Şef Yalçın Tarifleri</h1>
-        <p className="text-xs text-gray-500 mt-1">Dinamik Akıllı Mutfak Asistanı</p>
+        <p className="text-xs text-gray-500 mt-1">Gelişmiş Akıllı Mutfak Asistanı</p>
       </header>
 
       {/* Porsiyon Seçimi */}
@@ -348,7 +301,7 @@ export default function App() {
             <form onSubmit={handleAddIngredient} className="flex gap-2 mb-3">
               <input
                 type="text"
-                placeholder="Örn: Patates, Yufka, Tavuk..."
+                placeholder="Örn: Pırasa, Yufka, Kıymalı..."
                 value={newIngredientInput}
                 onChange={(e) => setNewIngredientInput(e.target.value)}
                 className="flex-1 border rounded-lg px-3 py-2 text-xs focus:outline-emerald-500"
@@ -367,7 +320,6 @@ export default function App() {
             )}
           </section>
 
-          {/* Dinamik Tarif Çıktısı */}
           <div className="space-y-4">
             {userIngredients.length === 0 ? (
               <div className="bg-white p-6 rounded-xl text-center border border-dashed border-gray-200">
