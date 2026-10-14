@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const INITIAL_STAPLES = ["Tuz", "Karabiber", "Zeytinyağı", "Limon", "Tereyağı", "Salça", "Soğan", "Sarımsak", "Un", "Sıvı Yağ", "Yumurta", "Süt"];
+const INITIAL_STAPLES = ["Tuz", "Karabiber", "Zeytinyağı", "Limon", "Tereyağı", "Salça", "Soğan", "Sarımsak", "Un", "Sıvı Yağ", "Yumurta", "Süt", "Krema", "Parmesan / Kaşar Peyniri"];
 
 // Metin temizleyici
 const normalizeText = (text) => {
@@ -15,29 +15,50 @@ const normalizeText = (text) => {
     .trim();
 };
 
-// --- ANLAMSAL (SEMANTİK) MALZEME AYRIŞTIRICI ---
-const BASE_INGREDIENTS = ['yufka', 'lavas', 'milfoy', 'ekmek', 'pide', 'makarna', 'pirinc', 'bulgur'];
-const SAUCE_INGREDIENTS = ['sut', 'yumurta', 'yag', 'tereyagi', 'zeytinyagi', 'yoğurt', 'yogurt', 'krema'];
+const BASE_INGREDIENTS = ['yufka', 'lavas', 'milfoy', 'ekmek', 'pide', 'makarna', 'fettuccine', 'fetucini', 'penne', 'spagetti', 'pirinc', 'bulgur'];
+const SAUCE_INGREDIENTS = ['sut', 'yumurta', 'yag', 'tereyagi', 'zeytinyagi', 'yogurt', 'krema'];
 
-// 1. GENEL VE DİNAMİK MALZEME MOTORU
+// 1. MALZEMEYE GÖRE BUL MOTORU
 const generateRecipesFromIngredients = (ingredients, servings) => {
   if (!ingredients || ingredients.length === 0) return [];
 
   const normalizedInput = ingredients.map(i => ({ raw: i, norm: normalizeText(i) }));
-
-  // Taban / Hamur malzemelerini ayıkla
   const baseItems = normalizedInput.filter(item => BASE_INGREDIENTS.some(b => item.norm.includes(b)));
-  
-  // İç Harç / Ana Malzemeleri ayıkla (Taban ve temel soslar dışındakiler)
   const fillingItems = normalizedInput.filter(
     item => !BASE_INGREDIENTS.some(b => item.norm.includes(b)) && !SAUCE_INGREDIENTS.some(s => item.norm.includes(s))
   );
 
-  const mainFillingText = fillingItems.length > 0 
-    ? fillingItems.map(i => i.raw).join(", ") 
-    : "Sade / Peynirli";
+  const mainFillingText = fillingItems.length > 0 ? fillingItems.map(i => i.raw).join(", ") : "Sade";
 
-  // --- MANTIK 1: YUFKA / MİLFÖY / BÖREK YAPIŞI ---
+  // MAKARNA & PASTA
+  if (baseItems.some(i => i.norm.includes('makarna') || i.norm.includes('fettuccine') || i.norm.includes('fetucini') || i.norm.includes('penne') || i.norm.includes('spagetti'))) {
+    return [
+      {
+        id: 'dynamic-pasta',
+        title: `Kremalı & Soslu Fettuccine / Makarna (${fillingItems.length > 0 ? mainFillingText : "Alfredo Usulü"})`,
+        category: "Makarnalar & İtalyan Mutfak",
+        servingsNote: `${servings} Kişilik Ölçü`,
+        detailedIngredients: [
+          `${(100 * servings)} gram Fettuccine / Makarna`,
+          `${(0.5 * servings).toFixed(1)} paket (100 ml) Sıvı Krema`,
+          `${(1 * servings)} yemek kaşığı Tereyağı`,
+          `${(30 * servings)} gram Rendelenmiş Parmesan veya Kaşar Peyniri`,
+          `${(0.5 * servings).toFixed(1)} diş İnce Kıyılmış Sarımsak`,
+          ...fillingItems.map(item => `${(80 * servings)} gram Soteleme ${item.raw}`),
+          `Tuz, Taze Çekilmiş Karabiber ve Fesleğen`
+        ],
+        steps: [
+          "Geniş bir tencerede bol suyu kaynatıp tuz ekleyin. Makarnaları paket üzerindeki süreden 1-2 dakika az (al dente) haşlayın. Haşlama suyundan yarım çay bardağı kenara ayırıp makarnayı süzün.",
+          `Geniş bir sos tavasında tereyağını eritin. İnce kıyılmış sarımsakları ${fillingItems.length > 0 ? `ve (${mainFillingText}) malzemelerini` : ''} ekleyip soteyin.`,
+          "Kremayı tavaya dökün ve kısık ateşte hafifçe tıkırdayıp kıvam alana kadar 2-3 dakika pişirin.",
+          "Haşlanan makarnaları, ayrılan haşlama suyunu ve rendelenmiş peyniri sosa ilave edin.",
+          "Tüm malzemeleri yüksek ateşte 1-2 dakika hızlıca harmanlayıp sosun makarnaya yapışmasını sağlayın. Taze karabiberle sıcak servis yapın."
+        ]
+      }
+    ];
+  }
+
+  // YUFKA / BÖREK
   if (baseItems.some(i => i.norm.includes('yufka') || i.norm.includes('milfoy'))) {
     return [
       {
@@ -47,76 +68,26 @@ const generateRecipesFromIngredients = (ingredients, servings) => {
         servingsNote: `${servings} Kişilik Ölçü`,
         detailedIngredients: [
           `${(1 * servings)} adet Günlük Yufka`,
-          ...fillingItems.map(item => `${(100 * servings)} gram / porsiyon ${item.raw}`),
-          `${(0.5 * servings).toFixed(1)} çay bardağı Süt & Sıvı Yağ / Yumurta Karışımı (sos için)`,
-          `${(1 * servings)} yemek kaşığı Tereyağı / Sıvı Yağ (tava için)`,
-          `Tuz ve İsteğe Göre Baharatlar`
+          ...fillingItems.map(item => `${(100 * servings)} gram ${item.raw}`),
+          `${(0.5 * servings).toFixed(1)} çay bardağı Süt & Sıvı Yağ Karışımı (sos için)`,
+          `${(1 * servings)} yemek kaşığı Tereyağı / Sıvı Yağ (tava için)`
         ],
         steps: [
-          `İç harç hazırlığı: (${mainFillingText}) malzemelerini temizleyip ince doğrayın. Gerekiyorsa az yağda Soğan ile soteleyip soğumaya bırakın.`,
-          "Tavayı yağlayın. İlk yufkayı kenarları tavadan dışarı taşacak şekilde serin.",
-          "Süt ve yağ karışımını yufkanın üzerine fırça ile sürün. Kalan yufkaları parçalayıp büzüştürerek tavaya yerleştirin.",
-          `Hazırladığınız (${mainFillingText}) iç harcını eşit şekilde yufkanın üzerine yayın.`,
-          "Tavadan taşan yufka kenarlarını içe doğru kapatın.",
-          "Kapağı kapalı olarak kısık-orta ateşte altı kızarana kadar pişirin. Düz bir tabakla çevirip diğer yüzünü de kızartıp sıcak servis yapın."
+          `İç harç hazırlığı: (${mainFillingText}) malzemelerini yıkayıp doğrayın. İsteğe göre soğan ve baharatla soteleyip soğutun.`,
+          "Yağlanmış tavaya ilk yufkayı kenarları dışarı taşacak şekilde serin. Sos sürüp kalan yufkayı parçalayarak içine yerleştirin.",
+          `Hazırladığınız (${mainFillingText}) harcını eşit şekilde yayın. Taşayan yufka kenarlarını kapatın.`,
+          "Kapağı kapalı olarak kısık-orta ateşte arkalı önlü kızartıp sıcak servis yapın."
         ]
       }
     ];
   }
 
-  // --- MANTIK 2: LAVAŞ / DÜRÜM / SOKAK LEZZETİ ---
-  if (baseItems.some(i => i.norm.includes('lavas') || i.norm.includes('ekmek') || i.norm.includes('pide'))) {
-    return [
-      {
-        id: 'dynamic-durum',
-        title: `Nefis Dürüm / Sandviç (${mainFillingText})`,
-        category: "Dürüm & Sokak Lezzetleri",
-        servingsNote: `${servings} Kişilik Ölçü`,
-        detailedIngredients: [
-          `${(1 * servings)} adet Lavaş / Ekmek`,
-          ...fillingItems.map(item => `${(120 * servings)} gram ${item.raw}`),
-          `${(1 * servings)} yemek kaşığı Sos / Mayonez / Salça`,
-          `Tuz ve Baharatlar`
-        ],
-        steps: [
-          `Ana malzemelerinizi (${mainFillingText}) tavada yüksek ateşte soteleyin.`,
-          "Lavaşı / ekmeği ısıtıp soslayın.",
-          "Sotelenen malzemeleri ve garnitürleri ekleyip dürüm yapın ve tost makinesinde ısıtıp servis edin."
-        ]
-      }
-    ];
-  }
-
-  // --- MANTIK 3: BALIK YEMEKLERİ ---
-  if (normalizedInput.some(i => i.norm.includes('cupra') || i.norm.includes('hamsi') || i.norm.includes('balik') || i.norm.includes('levrek') || i.norm.includes('somon'))) {
-    const isTava = normalizedInput.some(i => i.norm.includes('hamsi') || i.norm.includes('istavrit') || i.norm.includes('tava'));
-    return [
-      {
-        id: 'dynamic-fish',
-        title: `${ingredients.join(" & ").toUpperCase()} (${isTava ? "Tava" : "Fırında"})`,
-        category: "Balık Yemekleri",
-        servingsNote: `${servings} Kişilik Ölçü`,
-        detailedIngredients: [
-          `${(200 * servings)} gram Temizlenmiş Balık (${ingredients.join(", ")})`,
-          `${(1.5 * servings).toFixed(1)} yemek kaşığı Zeytinyağı`,
-          `${(0.5 * servings).toFixed(1)} adet Limon ve Soğan`,
-          `Tuz, Karabiber ve Defne Yaprağı`
-        ],
-        steps: isTava ? [
-          "Balıkları mısır ununa bulayıp kızgın tavada arkalı önlü kızartın."
-        ] : [
-          "Balıkları zeytinyağı, tuz ve limon ile marine edip fırında 200 derecede 25 dakika pişirin."
-        ]
-      }
-    ];
-  }
-
-  // --- MANTIK 4: DİĞER TÜM BİLEŞİKLER İÇİN GENEL DİNAMİK MUTFAK MOTORU ---
+  // GENEL BÜTÜNCÜL MOTOR
   return [
     {
       id: 'dynamic-general',
       title: `${ingredients.join(" ve ").toUpperCase()} Sote / Yemeği`,
-      category: "Pratik Ev Mutfakları",
+      category: "Ev Yemekleri",
       servingsNote: `${servings} Kişilik Ölçü`,
       detailedIngredients: ingredients.map(ing => `${(1 * servings)} porsiyon / gram ${ing}`).concat([
         `${(1 * servings)} yemek kaşığı Zeytinyağı / Tereyağı`,
@@ -124,62 +95,112 @@ const generateRecipesFromIngredients = (ingredients, servings) => {
       ]),
       steps: [
         `Malzemelerinizi (${ingredients.join(", ")}) temizleyip doğrayın.`,
-        `Uygun tavada veya tencerede yağ ile kendi suyunu çekene kadar pişirin.`,
-        `Baharatlarını ekleyip sıcak servis edin.`
+        `Uygun tavada veya tencerede yağ ile kendi suyunu çekene kadar pişirin ve baharatlayıp servis yapın.`
       ]
     }
   ];
 };
 
-// 2. YEMEK ADI İLE ARAMA MOTORU
+// 2. YEMEK ADI İLE ARAMA MOTORU (TÜM KATEGORİLER İÇİN GERÇEK TARİFLER)
 const generateAdvancedRecipe = (query, servings) => {
   const norm = normalizeText(query);
 
-  if (norm.includes('borek') || norm.includes('yufka')) {
+  // A) MAKARNA / FETTUCCINE / PENNE / SPAGETTI
+  if (norm.includes('fetucini') || norm.includes('fettuccine') || norm.includes('makarna') || norm.includes('penne') || norm.includes('spagetti') || norm.includes('lazanya')) {
     return {
-      title: `${query.toUpperCase()} (Tava Böreği)`,
+      title: `${query.toUpperCase()} (Kremalı Alfredo Usulü)`,
+      servingsNote: `${servings} Kişilik İtalyan Usulü Ölçü`,
+      category: "Makarnalar & İtalyan Mutfak",
+      detailedIngredients: [
+        `${(120 * servings)} gram Fettuccine / Pasta Makarna`,
+        `${(0.5 * servings).toFixed(1)} paket (100 ml) Sıvı Krema`,
+        `${(1 * servings)} yemek kaşığı Tereyağı`,
+        `${(30 * servings)} gram Rendelenmiş Parmesan / Kaşar Peyniri`,
+        `${(0.5 * servings).toFixed(1)} diş Sarımsak (ince kıyılmış)`,
+        `Tuz, Taze Çekilmiş Karabiber ve Fesleğen`
+      ],
+      steps: [
+        "Tencerede bol suyu kaynatıp tuz ekleyin. Makarnaları 8-10 dakika al dente (dişe gelir) haşlayın. Haşlama suyundan yarım çay bardağı kenara ayırıp süzün.",
+        "Tavada tereyağını eritip sarımsakları kokusu çıkana kadar 1 dakika soteleyin.",
+        "Kremayı ekleyip kısık ateşte hafifçe koyulaşana kadar 2-3 dakika tıkırdatın.",
+        "Haşlanan makarnayı, ayrılan haşlama suyunu ve rendelenmiş peyniri tavaya ekleyin.",
+        "Kısık ateşte hızlıca karıştırarak sosun makarnaya tamamen yapışmasını sağlayın. Taze karabiber serperek sıcak servis edin."
+      ]
+    };
+  }
+
+  // B) BÖREK / YUFKA
+  if (norm.includes('borek') || norm.includes('yufka') || norm.includes('poaca')) {
+    return {
+      title: `${query.toUpperCase()} (Tava / Fırın Böreği)`,
       servingsNote: `${servings} Kişilik Ölçü`,
       category: "Börek & Hamur İşleri",
       detailedIngredients: [
-        `${(1 * servings)} adet Yufka`,
-        `${(100 * servings)} gram Özel Harç (${query})`,
-        `${(0.5 * servings).toFixed(1)} çay bardağı Süt ve Sıvı Yağ`,
+        `${(1 * servings)} adet Günlük Yufka`,
+        `${(100 * servings)} gram Peynir / Patates / Kıymalı İç Harç`,
+        `${(0.5 * servings).toFixed(1)} çay bardağı Süt & Sıvı Yağ Karışımı`,
         `Tereyağı`
       ],
       steps: [
-        "Tavayı yağlayıp yufkayı serin, harcı ekleyip kapatın ve arkalı önlü kızartın."
+        "Tavayı yağlayıp ilk yufkayı serin. Arasına sos sürüp iç harcı dökün ve kapatın.",
+        "Kısık ateşte arkalı önlü nar gibi kızarana kadar pişirin."
       ]
     };
   }
 
-  if (norm.includes('cupra') || norm.includes('cipura') || norm.includes('hamsi') || norm.includes('levrek') || norm.includes('balik')) {
+  // C) BALIK & DENİZ ÜRÜNLERİ
+  if (norm.includes('cupra') || norm.includes('cipura') || norm.includes('hamsi') || norm.includes('levrek') || norm.includes('somon') || norm.includes('balik')) {
     return {
-      title: `${query.toUpperCase()} (Fırında Limonlu)`,
+      title: `${query.toUpperCase()} (Fırında Limonlu & Zeytinyağlı)`,
       servingsNote: `${servings} Kişilik Ölçü`,
       category: "Balık Yemekleri",
       detailedIngredients: [
-        `${(1 * servings)} adet Temizlenmiş Balık (${query})`,
-        `${(0.5 * servings).toFixed(1)} adet Limon ve Soğan`,
-        `${(1.5 * servings).toFixed(1)} yemek kaşığı Zeytinyağı`,
-        `Tuz ve Karabiber`
+        `${(200 * servings)} gram Temizlenmiş Balık (${query})`,
+        `${(0.5 * servings).toFixed(1)} adet Limon ve Kuru Soğan`,
+        `${(1.5 * servings).toFixed(1)} yemek kaşığı Sızma Zeytinyağı`,
+        `Tuz, Karabiber ve Defne Yaprağı`
       ],
       steps: [
-        "Balığı zeytinyağı, limon ve tuz ile ovup fırında 200 derecede 25 dakika pişirin."
+        "Balığı zeytinyağı, tuz ve karabiber ile ovup marine edin.",
+        "Fırın tepsisine soğan dilimleri üzerine balığı yerleştirip üzerine limon dilimleri ekleyin.",
+        "200 derece fırında yaklaşık 25-30 dakika pişirip servis edin."
       ]
     };
   }
 
+  // D) ÇORBALAR
+  if (norm.includes('corba') || norm.includes('mercimek') || norm.includes('mantar')) {
+    return {
+      title: `${query.toUpperCase()} ÇORBASI`,
+      servingsNote: `${servings} Kişilik Ölçü`,
+      category: "Çorbalar",
+      detailedIngredients: [
+        `${(0.5 * servings).toFixed(1)} su bardağı Temel Çorba Malzemesi (${query})`,
+        `${(1 * servings)} yemek kaşığı Tereyağı ve Un`,
+        `${(2 * servings)} su bardağı Sıcak Su / Et Suyu`,
+        `Tuz ve Baharatlar`
+      ],
+      steps: [
+        "Tencerede yağı eritip unu ve malzemeleri soteleyin.",
+        "Sıcak suyu ekleyip malzemeler yumuşayana kadar pişirin ve blenderdan geçirerek sıcak servis yapın."
+      ]
+    };
+  }
+
+  // E) DİĞER TÜM SICAK YEMEKLER
   return {
-    title: `${query.toUpperCase()}`,
+    title: `${query.toUpperCase()} (Klasik Ev Yemeği)`,
     servingsNote: `${servings} Kişilik Ölçü`,
     category: "Geleneksel Mutfak",
     detailedIngredients: [
-      `${(150 * servings)} gram ${query} Malzemesi`,
-      `${(1 * servings)} yemek kaşığı Yağ`,
-      `Tuz ve Baharatlar`
+      `${(150 * servings)} gram Doğranmış ${query} Malzemesi`,
+      `${(0.5 * servings).toFixed(1)} adet Kuru Soğan ve Sarımsak`,
+      `${(1 * servings)} yemek kaşığı Zeytinyağı / Salça`,
+      `Tuz ve Karabiber`
     ],
     steps: [
-      "Malzemeleri uygun teknikte pişirip sıcak servis edin."
+      "Tencerede yağı ısıtıp doğranmış soğanları soteleyin.",
+      "Ana malzemeleri ve salçayı/baharatları ekleyip kısık ateşte kendi suyunda pişmeye bırakın."
     ]
   };
 };
@@ -301,7 +322,7 @@ export default function App() {
             <form onSubmit={handleAddIngredient} className="flex gap-2 mb-3">
               <input
                 type="text"
-                placeholder="Örn: Pırasa, Yufka, Kıymalı..."
+                placeholder="Örn: Fetucini, Mantar, Tavuk..."
                 value={newIngredientInput}
                 onChange={(e) => setNewIngredientInput(e.target.value)}
                 className="flex-1 border rounded-lg px-3 py-2 text-xs focus:outline-emerald-500"
@@ -371,7 +392,7 @@ export default function App() {
             <form onSubmit={(e) => e.preventDefault()} className="flex gap-2 mb-2">
               <input
                 type="text"
-                placeholder="Örn: Çupra, Hamsi Tava, Mantar Çorbası..."
+                placeholder="Örn: Fetucini Makarna, Çupra, Mantar Çorbası..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1 border rounded-lg px-3 py-2 text-xs focus:outline-emerald-500"
