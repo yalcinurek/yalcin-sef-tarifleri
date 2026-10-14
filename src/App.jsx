@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 
-const INITIAL_STAPLES = ["Tuz", "Karabiber", "Zeytinyağı", "Limon", "Tereyağı", "Salça", "Soğan", "Sarımsak", "Un", "Sıvı Yağ", "Mısır Unu"];
+const INITIAL_STAPLES = ["Tuz", "Karabiber", "Zeytinyağı", "Limon", "Tereyağı", "Salça", "Soğan", "Sarımsak", "Un", "Sıvı Yağ", "Yumurta", "Süt"];
 
-// Türkçe karakter temizleyici
 const normalizeText = (text) => {
   return text
     .toLowerCase()
@@ -15,115 +14,124 @@ const normalizeText = (text) => {
     .trim();
 };
 
-// 1. MALZEMEYE GÖRE GERÇEKÇİ TARİF ÜRETİCİ MOTOR
+// 1. MALZEMEYE GÖRE GERÇEKÇİ TARİF ÜRETİCİ
 const generateRecipesFromIngredients = (ingredients, servings) => {
   if (!ingredients || ingredients.length === 0) return [];
 
   const normIngs = ingredients.map(i => normalizeText(i));
   const ingStr = ingredients.join(" ve ");
 
-  // A) TAVUK VE LİMON / SOS
+  // A) HAMUR İŞİ & BÖREK (Yufka + Peynir / Lor / Kıyma / Patates)
+  if (normIngs.some(i => i.includes('yufka'))) {
+    return [
+      {
+        id: 'borek-1',
+        title: "Pratik Tava Böreği (Lor Peynirli)",
+        category: "Börek & Hamur İşleri",
+        servingsNote: `${servings} Kişilik Ölçü`,
+        detailedIngredients: [
+          `${(1 * servings)} adet Günlük Yufka`,
+          `${(100 * servings)} gram Lor Peyniri (veya Peynir)`,
+          `${(0.25 * servings).toFixed(1)} demet Maydanoz (ince kıyılmış)`,
+          `${(0.5 * servings).toFixed(1)} çay bardağı Süt & Sıvı Yağ Karışımı (sos için)`,
+          `${(1 * servings)} yemek kaşığı Tereyağı / Sıvı Yağ (tavayı yağlamak için)`,
+          `Pul Biber ve Karabiber`
+        ],
+        steps: [
+          "Lor peynirini ince kıyılmış maydanoz ve baharatlarla karıştırıp iç harcı hazırlayın.",
+          "Geniş bir tavayı az yağ ile yağlayın. İlk yufkayı kenarları tavadan dışarı taşacak şekilde serin.",
+          "Süt ve sıvı yağ karışımını yufkanın üzerine sürün. İkinci yufkayı parçalayarak tavaya büzüştürerek serin.",
+          "Hazırladığınız lor peynirli iç harcı eşit şekilde yayın.",
+          "Tavadan taşan yufkanın kenarlarını içe doğru kapatın.",
+          "Tavanın kapağını kapatıp kısık-orta ateşte altı kızarana kadar pişirin. Düz bir tabak yardımıyla çevirip diğer tarafını da kızartıp sıcak servis yapın."
+        ]
+      }
+    ];
+  }
+
+  // B) TAVUK VE LİMON
   if (normIngs.some(i => i.includes('tavuk')) && normIngs.some(i => i.includes('limon'))) {
     return [
       {
-        id: 'ing-1',
+        id: 'tavuk-limon-1',
         title: "Tavada Limonlu & Kekikli Tavuk Sote",
         category: "Tavuk Yemekleri",
-        servingsNote: `${servings} Kişilik Özel Ölçü`,
+        servingsNote: `${servings} Kişilik Ölçü`,
         detailedIngredients: [
-          `${(150 * servings)} gram Jülyen/Kuşbaşı Tavuk Göğsü`,
-          `${(0.5 * servings).toFixed(1)} adet Taze Limon Suyu`,
-          `${(1 * servings)} yemek kaşığı Zeytinyağı veya Tereyağı`,
+          `${(150 * servings)} gram Jülyen Tavuk Göğsü`,
+          `${(0.5 * servings).toFixed(1)} adet Limon Suyu`,
+          `${(1 * servings)} yemek kaşığı Zeytinyağı`,
           `${(0.25 * servings).toFixed(1)} adet Kuru Soğan ve 1 Diş Sarımsak`,
           `Tuz, Karabiber ve Kekik`
         ],
         steps: [
-          "Tavada zeytinyağını kızdırıp doğranmış tavukları yüksek ateşte soteleyin.",
-          "Tavuklar suyunu çekmeye başlayınca doğranmış soğan ve sarımsağı ekleyip 3-4 dakika daha kavurun.",
-          "Taze limon suyunu, tuz, karabiber ve kekiği ekleyip kısık ateşte sosu tavuklara çektirin.",
-          "Sıcak olarak pilav veya salata eşliğinde servis yapın."
-        ]
-      },
-      {
-        id: 'ing-2',
-        title: "Fırında Limon Marineden Tavuk Göğsü",
-        category: "Fırın Yemekleri",
-        servingsNote: `${servings} Kişilik Ölçü`,
-        detailedIngredients: [
-          `${(150 * servings)} gram Tavuk Göğsü`,
-          `${(0.5 * servings).toFixed(1)} adet Limon (dilimlenmiş)`,
-          `${(1 * servings)} yemek kaşığı Zeytinyağı`,
-          `Sarımsak tozu/ezmesi, Tuz ve Biber`
-        ],
-        steps: [
-          "Tavuk göğsünü zeytinyağı, limon suyu, sarımsak ve baharatlarla marine edip 15 dk bekletin.",
-          "Fırın kabına alıp üzerine limon dilimleri yerleştirin.",
-          "200 derece fırında yaklaşık 20 dakika kurumayacak şekilde pişirin."
+          "Tavada zeytinyağını kızdırıp tavukları soteleyin.",
+          "Soğan ve sarımsağı ekleyip kavurun.",
+          "Limon suyunu ve baharatları ekleyip kısık ateşte demlendirin."
         ]
       }
     ];
   }
 
-  // B) BALIK (Çupra, Hamsi vb.)
+  // C) BALIK ÇEŞİTLERİ (Çupra, Hamsi vb.)
   if (normIngs.some(i => i.includes('cupra') || i.includes('hamsi') || i.includes('balik') || i.includes('levrek'))) {
     return [
       {
-        id: 'ing-balık-1',
-        title: `${ingStr.toUpperCase()} (Tava / Fırın Usulü)`,
+        id: 'balık-1',
+        title: `${ingStr.toUpperCase()} (Fırında Limonlu)`,
         category: "Balık Yemekleri",
         servingsNote: `${servings} Kişilik Ölçü`,
         detailedIngredients: [
           `${(200 * servings)} gram Temizlenmiş Balık (${ingStr})`,
-          `${(1.5 * servings).toFixed(1)} yemek kaşığı Zeytinyağı / Sıvı Yağ`,
-          `${(0.5 * servings).toFixed(1)} adet Limon`,
+          `${(1.5 * servings).toFixed(1)} yemek kaşığı Zeytinyağı`,
+          `${(0.5 * servings).toFixed(1)} adet Limon ve Soğan`,
           `Tuz ve Defne Yaprağı`
         ],
         steps: [
-          "Balıkları yıkayıp süzün, zeytinyağı, tuz ve limon ile marine edin.",
-          "Tavada kızartın veya fırında 200 derecede 25 dakika pişirin."
+          "Balıkları zeytinyağı, limon ve tuz ile ovun.",
+          "Fırın tepsisine soğan dilimleri üzerine balıkları yerleştirip 200 derecede 25 dk pişirin."
         ]
       }
     ];
   }
 
-  // C) PATATES VE YUMURTA
+  // D) PATATES VE YUMURTA
   if (normIngs.some(i => i.includes('patates')) && normIngs.some(i => i.includes('yumurta'))) {
     return [
       {
-        id: 'ing-py-1',
-        title: "Küp Patatesli Yumurta Sote",
+        id: 'patates-yumurta-1',
+        title: "Küp Patatesli Yumurta",
         category: "Kahvaltılık & Pratik",
         servingsNote: `${servings} Kişilik Ölçü`,
         detailedIngredients: [
-          `${(1 * servings)} adet Küp Doğranmış Patates`,
+          `${(1 * servings)} adet Patates (küp doğranmış)`,
           `${(1 * servings)} adet Yumurta`,
-          `${(1 * servings)} yemek kaşığı Sıvı Yağ / Tereyağı`,
-          `Tuz, Karabiber ve Pul Biber`
+          `${(1 * servings)} yemek kaşığı Sıvı Yağ`,
+          `Tuz ve Pul Biber`
         ],
         steps: [
-          "Patatesleri küçük küpler halinde doğrayıp tavada yağda yumuşayana kadar kızartın.",
-          "Üzerine baharatları ekleyip yumurtaları kırın ve pişirin."
+          "Patatesleri tavada yağda yumuşayana kadar kızartın.",
+          "Üzerine yumurtayı kırıp baharatlarını ekleyerek pişirin."
         ]
       }
     ];
   }
 
-  // D) GENEL MALZEME KOMBİNASYONU (VARSAYILAN DİNAMİK Mutfak Motoru)
+  // E) DİĞER SEBZE VE ET YEMEKLERİ (Soteleşmeye Uygun Sıcak Yemekler)
   return [
     {
-      id: 'ing-genel-1',
-      title: `${ingStr.toUpperCase()} Sote / Harmanı`,
-      category: "Pratik Mutfak",
-      servingsNote: `${servings} Kişilik Özel Ölçü`,
+      id: 'genel-1',
+      title: `${ingStr.toUpperCase()} Yemeği`,
+      category: "Ev Yemekleri",
+      servingsNote: `${servings} Kişilik Ölçü`,
       detailedIngredients: ingredients.map(ing => `${(1 * servings)} porsiyon ${ing}`).concat([
-        `${(0.5 * servings).toFixed(1)} adet Kuru Soğan ve 1 Diş Sarımsak`,
-        `${(1 * servings)} yemek kaşığı Zeytinyağı / Tereyağı`,
-        `Tuz, Karabiber ve Pul Biber`
+        `${(1 * servings)} yemek kaşığı Zeytinyağı`,
+        `Tuz ve Karabiber`
       ]),
       steps: [
-        `Tavada yağı kızdırıp doğranmış soğan ve sarımsakları soteleyin.`,
-        `Ana malzemelerinizi (${ingStr}) ekleyip karıştırarak pişirin.`,
-        `Baharatları ilave edip ${servings} kişilik porsiyona uygun olarak sıcak servis yapın.`
+        `Malzemelerinizi (${ingStr}) yıkayıp pişirme tekniğine uygun şekilde doğrayın.`,
+        `Tavada veya tencerede yağ ile hafifçe soteleyip kendi buharında pişmeye bırakın.`,
+        `Baharatlarını ekleyip sıcak servis yapın.`
       ]
     }
   ];
@@ -133,74 +141,51 @@ const generateRecipesFromIngredients = (ingredients, servings) => {
 const generateAdvancedRecipe = (query, servings) => {
   const norm = normalizeText(query);
 
-  if (norm.includes('cupra') || norm.includes('cipura') || norm.includes('hamsi') || norm.includes('levrek') || norm.includes('somon') || norm.includes('balik')) {
+  if (norm.includes('borek') || norm.includes('yufka')) {
     return {
-      title: `${query.toUpperCase()} (Fırında Limonlu & Zeytinyağlı)`,
-      servingsNote: `${servings} Kişilik Fırın Ölçüsü`,
-      category: "Balık & Deniz Ürünleri",
-      detailedIngredients: [
-        `${(1 * servings)} adet Temizlenmiş Tüm Balık (${query})`,
-        `${(0.5 * servings).toFixed(1)} adet Kuru Soğan`,
-        `${(0.5 * servings).toFixed(1)} adet Taze Limon (dilimlenmiş)`,
-        `${(1.5 * servings).toFixed(1)} yemek kaşığı Sızma Zeytinyağı`,
-        `Tuz, Karabiber ve Kekik`
-      ],
-      steps: [
-        "Balığı zeytinyağı, tuz ve karabiber ile ovup marine edin.",
-        "Fırın tepsisine soğanları dizip üzerine balığı yerleştirin.",
-        "Üzerine limon dilimlerini koyup 200 derece fırında 25-30 dakika pişirin."
-      ]
-    };
-  }
-
-  if (norm.includes('salata') || norm.includes('cacik') || norm.includes('meze') || norm.includes('piyaz')) {
-    return {
-      title: `${query.toUpperCase()} (Taze Soğuk Hazırlanış)`,
+      title: `${query.toUpperCase()} (Tava Böreği)`,
       servingsNote: `${servings} Kişilik Ölçü`,
-      category: "Salatalar & Soğuk Mezeler",
+      category: "Börek & Hamur İşleri",
       detailedIngredients: [
-        `${(1 * servings)} adet Taze Domates ve Salatalık`,
-        `${(1 * servings)} yemek kaşığı Sızma Zeytinyağı`,
-        `${(0.5 * servings).toFixed(1)} adet Limon Suyu veya Nar Ekşisi`,
-        `Tuz`
+        `${(1 * servings)} adet Yufka`,
+        `${(100 * servings)} gram Peynir / Kıymalı Harç`,
+        `${(0.5 * servings).toFixed(1)} çay bardağı Süt ve Sıvı Yağ`,
+        `Tereyağı`
       ],
       steps: [
-        "Sebzeleri yıkayıp taze olarak doğrayın.",
-        "Zeytinyağı, limon suyu ve tuzu karıştırıp üzerine dökerek servis yapın."
+        "Tavayı yağlayıp yufkayı serin, harcı ekleyip kapatın ve arkalı önlü kızartın."
       ]
     };
   }
 
-  if (norm.includes('corba') || norm.includes('mantar') || norm.includes('martar') || norm.includes('mercimek')) {
+  if (norm.includes('cupra') || norm.includes('cipura') || norm.includes('hamsi') || norm.includes('levrek') || norm.includes('balik')) {
     return {
-      title: `${query.toUpperCase()} ÇORBASI`,
-      servingsNote: `${servings} Kişilik Çorba Ölçüsü`,
-      category: "Çorbalar",
+      title: `${query.toUpperCase()} (Fırında Limonlu)`,
+      servingsNote: `${servings} Kişilik Ölçü`,
+      category: "Balık Yemekleri",
       detailedIngredients: [
-        `${(150 * servings)} gram Kültür Mantarı / Mercimek`,
-        `${(1 * servings)} yemek kaşığı Tereyağı ve Un`,
-        `${(2 * servings)} su bardağı Sıcak Su / Tavuk Suyu`,
+        `${(1 * servings)} adet Temizlenmiş Balık (${query})`,
+        `${(0.5 * servings).toFixed(1)} adet Limon ve Soğan`,
+        `${(1.5 * servings).toFixed(1)} yemek kaşığı Zeytinyağı`,
         `Tuz ve Karabiber`
       ],
       steps: [
-        "Tencerede yağı eritip un ve malzemeleri soteleyin.",
-        "Sıcak suyu ekleyip kaynamaya bırakın ve kısık ateşte pişirin."
+        "Balığı zeytinyağı, limon ve tuz ile ovup fırında 200 derecede 25 dakika pişirin."
       ]
     };
   }
 
   return {
-    title: `${query.toUpperCase()} (Ev Usulü Yemek)`,
+    title: `${query.toUpperCase()}`,
     servingsNote: `${servings} Kişilik Ölçü`,
-    category: "Geleneksel Yemekler",
+    category: "Geleneksel Mutfak",
     detailedIngredients: [
       `${(150 * servings)} gram ${query} Malzemesi`,
-      `${(1 * servings)} yemek kaşığı Zeytinyağı / Tereyağı`,
+      `${(1 * servings)} yemek kaşığı Yağ`,
       `Tuz ve Baharatlar`
     ],
     steps: [
-      "Malzemeleri hazırlayıp uygun pişirme kabında soteleyin.",
-      "Baharatları ekleyip sıcak servis edin."
+      "Malzemeleri uygun teknikte pişirip sıcak servis edin."
     ]
   };
 };
@@ -242,20 +227,17 @@ export default function App() {
     setUserIngredients(userIngredients.filter(i => i !== item));
   };
 
-  // Malzemelere Göre Üretilen Tarifler
   const ingredientRecipes = generateRecipesFromIngredients(userIngredients, servings);
-
-  // Yemek Adı ile Arama Sonucu
   const searchRecipeResult = searchQuery.trim() !== '' ? generateAdvancedRecipe(searchQuery, servings) : null;
 
   return (
     <div className="max-w-md mx-auto bg-gray-50 min-h-screen p-4 font-sans pb-12">
       <header className="text-center mb-4 pt-2">
         <h1 className="text-2xl font-bold text-emerald-600 tracking-tight">👨‍🍳 Şef Yalçın Tarifleri</h1>
-        <p className="text-xs text-gray-500 mt-1">Akıllı ve Kusursuz Mutfak Asistanı</p>
+        <p className="text-xs text-gray-500 mt-1">Akıllı ve Doğru Mutfak Asistanı</p>
       </header>
 
-      {/* Porsiyon / Kişi Sayısı Seçimi */}
+      {/* Porsiyon Seçimi */}
       <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm mb-4 flex items-center justify-between">
         <span className="text-xs font-semibold text-gray-700">👥 Porsiyon Ölçüsü:</span>
         <div className="flex gap-1">
@@ -325,7 +307,7 @@ export default function App() {
             <form onSubmit={handleAddIngredient} className="flex gap-2 mb-3">
               <input
                 type="text"
-                placeholder="Örn: Çupra, Tavuk Göğüs, Limon..."
+                placeholder="Örn: Lor Peyniri, Yufka, Tavuk..."
                 value={newIngredientInput}
                 onChange={(e) => setNewIngredientInput(e.target.value)}
                 className="flex-1 border rounded-lg px-3 py-2 text-xs focus:outline-emerald-500"
@@ -344,14 +326,13 @@ export default function App() {
             )}
           </section>
 
-          {/* Malzemeye Göre Çıkan Tarif Kartları */}
           <div className="space-y-4">
             {userIngredients.length === 0 ? (
               <div className="bg-white p-6 rounded-xl text-center border border-dashed border-gray-200">
                 <p className="text-xs text-gray-500">Malzemelerinizi ekleyin, o malzemelere uygun tarifler anında hazırlansın.</p>
               </div>
             ) : (
-              ingredientRecipes.map((recipe, index) => (
+              ingredientRecipes.map((recipe) => (
                 <div key={recipe.id} className="bg-white p-4 rounded-xl shadow-sm border border-emerald-100">
                   <div className="flex justify-between items-start mb-1">
                     <h4 className="font-bold text-gray-800 text-sm">{recipe.title}</h4>
@@ -362,7 +343,7 @@ export default function App() {
                   <p className="text-[10px] text-gray-400 mb-3">{recipe.servingsNote}</p>
                   
                   <div className="text-xs mb-3 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
-                    <span className="font-semibold text-gray-700 block mb-1.5">⚖️ Gerekli Ölçüler:</span>
+                    <span className="font-semibold text-gray-700 block mb-1.5">秤 Gerekli Ölçüler:</span>
                     <ul className="space-y-1">
                       {recipe.detailedIngredients.map((ing, idx) => (
                         <li key={idx} className="text-[11px] text-gray-700 flex items-center gap-1.5">
